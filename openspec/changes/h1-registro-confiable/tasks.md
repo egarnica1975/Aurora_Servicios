@@ -28,16 +28,16 @@
 - [ ] 5.4 Verificar los escenarios de `historial`.
 
 ## 6. Acceso y datos (`acceso-datos`)
-- [ ] 6.1 Cuentas individuales con alta por el administrador técnico.
+- [ ] 6.1 Cuentas individuales con alta por el administrador técnico. (V1: simulado con selector de usuario, sin contraseña.)
 - [ ] 6.2 Roles y permisos según la matriz de la especificación.
 - [ ] 6.3 Limitar los datos de contacto a nombre y un medio.
-- [ ] 6.4 Registro de auditoría de inicios de sesión y acciones administrativas.
+- [ ] 6.4 Registro de auditoría de inicios de sesión y acciones administrativas. (V1: parcial; sin ingreso fallido.)
 - [ ] 6.5 Verificar los escenarios de `acceso-datos`.
 
 ## 7. Respaldo (`respaldo`)
-- [ ] 7.1 Configurar el respaldo programado con el proveedor y su registro de resultado.
+- [ ] 7.1 Configurar el respaldo programado con el proveedor y su registro de resultado. (V1: no cubierta; respaldo manual por exportación JSON.)
 - [ ] 7.2 Documentar el procedimiento de recuperación.
-- [ ] 7.3 Ejecutar y registrar una prueba de recuperación antes de iniciar el piloto.
+- [ ] 7.3 Ejecutar y registrar una prueba de recuperación antes de iniciar el piloto. (V1: importar un JSON y comparar conteos.)
 - [ ] 7.4 Verificar los escenarios de `respaldo`.
 
 ## 8. Piloto
@@ -45,3 +45,9 @@
 - [ ] 8.2 Operar el piloto de 6 semanas en paralelo con la hoja A02.
 - [ ] 8.3 Medir cobertura (K01) y responsable (K04) en el piloto, sin excluir casos, y verificarlas contra los canales.
 - [ ] 8.4 Revisión con el coordinador: ajustar y archivar el cambio.
+
+## 9. Arranque de la V1
+- [ ] 9.1 Crear `.gitignore`.
+- [ ] 9.2 Crear `README.md` con instrucciones de configuración e inicio: abrir `app/index.html`, cargar los datos de prueba, exportar e importar JSON, probar la recuperación y los límites de la V1.
+- [ ] 9.3 Crear los datos de prueba ficticios en JSON y CSV: unos 15 clientes, 6 colaboradores (4 agentes, 1 coordinador, 1 de consulta), 1 administrador técnico y unas 25 solicitudes.
+- [ ] 9.4 Implementar `app/index.html` con bandeja, formulario de registro y panel del coordinador; el detalle con línea de tiempo es un panel de la bandeja.

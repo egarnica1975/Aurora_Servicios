@@ -33,10 +33,14 @@ Ninguna (primer cambio).
 - El ERP no se toca.
 - Presupuesto del caso: inversión hasta COP 12.000.000 y operación hasta COP 300.000 al mes; el costo de la opción elegida aún no se conoce.
 
+## Alcance de la primera versión (23-nov-2026)
+
+H1 se implementa primero como la V1: un único archivo HTML con HTML5, CSS3 y JavaScript, datos en memoria, guardado en JSON e importación en JSON y CSV. Algunos requisitos solo se cumplen de forma parcial o simulada; la tabla está en `design.md` (D6). Los límites se cierran en una versión 2 con servidor y base de datos, especificada en cambios aparte.
+
 ## Preguntas abiertas
 
-1. ¿Qué opción de realización se usa para APP-05 (A, B o C)? Decide el caso de negocio con los criterios de `design.md`.
-2. Formato de la referencia (por ejemplo, prefijo y consecutivo): `[por definir]` con el coordinador.
+1. ~~Opción de realización de APP-05~~ Resuelta: opción C en su forma V1 (`design.md`, D1).
+2. ~~Formato de la referencia~~ Resuelta: `SOL-AAAA-NNNNN` (`design.md`, D7).
 3. Frecuencia de respaldo y tiempo máximo aceptable de recuperación: `[por definir]` con el proveedor.
 4. ¿Cómo se registra la fecha real de recepción cuando el agente registra después del contacto? Se propone guardar ambas fechas (escenario en `solicitudes`).
 5. Plazo de retención del historial y de las solicitudes: `[por definir]`.
