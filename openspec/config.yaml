@@ -1,0 +1,30 @@
+schema: spec-driven
+
+context: |
+  Producto: «Registro único de solicitudes» (componente APP-05) y su tablero de pendientes e
+  indicadores (APP-06) para Comercial Aurora, una distribuidora ficticia de suministros de oficina
+  con 22 personas, 300 clientes activos, unos 1.200 pedidos y 600 solicitudes de servicio al mes.
+  Propósito: dar a cada solicitud una referencia única, un responsable con evidencia, una respuesta
+  final comunicada y un plazo de 48 horas corridas, y medirlo sin mejora aparente.
+  Fuente de verdad del caso: documento estratégico (E01–E10). Capacidad atendida: CAP-01 Gestión de
+  solicitudes de clientes (01.1 registro, 01.2 asignación, 01.3 resolución, 01.4 seguimiento).
+  Restricciones: sin equipo de desarrollo (un proveedor externo acompaña y mantiene); inversión hasta
+  COP 12.000.000; operación hasta COP 300.000 al mes; piloto de 6 semanas; 4 agentes y 1 coordinador;
+  aprendizaje en una sesión corta; acceso individual; datos de contacto mínimos; respaldo y
+  recuperación comprobables; en capacitación solo registros ficticios.
+  El ERP sigue siendo la referencia de clientes, pedidos y facturación y no se modifica.
+  Idioma de los artefactos: español. Las palabras SHALL, WHEN y THEN se mantienen en inglés.
+
+rules:
+  proposal:
+    - Citar la oportunidad (OP-xx) y la fuente del caso (E01–E10) que justifican el cambio.
+    - Listar las preguntas abiertas en lugar de suponer datos que el caso no trae.
+  specs:
+    - Describir comportamiento observable, no tecnología.
+    - Cada requisito lleva una línea de trazabilidad con OP, indicadores K y fuente.
+    - No fijar cifras que el caso no define; usar [por definir].
+    - Distinguir hechos documentados de supuestos de diseño.
+  design:
+    - Declarar como supuesto toda decisión técnica que el caso no impone.
+  tasks:
+    - Cada grupo de tareas termina verificando los escenarios de su especificación.
