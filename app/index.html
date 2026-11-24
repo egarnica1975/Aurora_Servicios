@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestión de solicitudes · Comercial Aurora (V1)</title>
+<style>
+:root{--navy:#1b2a49;--teal:#14746f;--amber:#b7791f;--rojo:#b42318;--gris:#f3f5f8;--borde:#d5dae3;--txt:#1d2433;--suave:#5b6578}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 Calibri,Segoe UI,Arial,sans-serif;color:var(--txt);background:var(--gris)}
+header.top{background:var(--navy);color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header.top h1{font-size:1.1rem;margin:0}
+header.top .der{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.92rem}
+.banda{padding:6px 16px;font-size:.9rem;font-weight:600}
+.banda.cap{background:#fdf0d5;color:#7a4b00}
+.banda.trab{background:#dff3ef;color:#0b4f4a}
+main{padding:14px 16px;max-width:1280px;margin:0 auto}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+nav.tabs button{border:1px solid var(--borde);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}
+nav.tabs button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+button{font:inherit;cursor:pointer}
+button.prim{background:var(--teal);color:#fff;border:0;border-radius:8px;padding:8px 14px}
+button.sec{background:#fff;border:1px solid var(--borde);border-radius:8px;padding:8px 14px}
+button.pel{background:var(--rojo);color:#fff;border:0;border-radius:8px;padding:8px 14px}
+button.link{background:none;border:0;color:#cfe7ff;text-decoration:underline;padding:0}
+.card{background:#fff;border:1px solid var(--borde);border-radius:10px;padding:14px;margin-bottom:12px}
+.card h2{margin:0 0 8px;font-size:1.1rem;color:var(--navy)}
+.card h3{margin:14px 0 6px;font-size:1rem;color:var(--navy)}
+label{display:block;font-size:.88rem;color:var(--suave);margin-bottom:2px}
+input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--borde);border-radius:7px;background:#fff}
+textarea{min-height:60px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+.fila{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fin{justify-content:flex-end}
+.dos{display:grid;gap:14px;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:start}
+@media(max-width:900px){.dos{grid-template-columns:minmax(0,1fr)}}
+.tabla{width:100%;border-collapse:collapse;font-size:.92rem}
+.tabla th,.tabla td{padding:7px 8px;border-bottom:1px solid var(--borde);text-align:left;vertical-align:top}
+.tabla th{background:#eef1f6;color:var(--navy);position:sticky;top:0}
+.tabla tr.sel{background:#e6f4f1}
+.tabla tbody tr[data-id]{cursor:pointer}
+.scroll{overflow:auto;max-height:62vh;max-width:100%}
+.chip{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.8rem;background:#e7ebf3;color:var(--navy)}
+.chip.ok{background:#dff3ef;color:#0b4f4a}.chip.aviso{background:#fdf0d5;color:#7a4b00}.chip.mal{background:#fde4e1;color:var(--rojo)}
+.aviso-msg{padding:9px 12px;border-radius:8px;margin-bottom:10px;font-weight:600}
+.aviso-msg.ok{background:#dff3ef;color:#0b4f4a}.aviso-msg.error{background:#fde4e1;color:var(--rojo)}.aviso-msg.info{background:#e7ebf3;color:var(--navy)}
+.linea{list-style:none;margin:0;padding:0;border-left:3px solid var(--teal)}
+.linea li{padding:4px 0 8px 12px;font-size:.9rem}
+.linea .cuando{color:var(--suave);font-size:.82rem}
+.suave{color:var(--suave);font-size:.9rem}
+dialog{border:1px solid var(--borde);border-radius:12px;max-width:520px;width:92%}
+dialog::backdrop{background:rgba(20,30,50,.45)}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;font-size:.93rem}
+.kv dt{color:var(--suave)}.kv dd{margin:0}
+.login{max-width:480px;margin:40px auto}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="dlg"></dialog>
+
+<script>
+'use strict';
+/* =====================================================================
+   NEGOCIO: reglas de H1 independientes de la pantalla.
+   Todas las funciones reciben la base de datos (db), el usuario y la
+   fecha ("ahora") y devuelven {ok:true,...} o {ok:false,error:'...'}.
+   Los cambios y la auditoría solo se agregan; no hay función que los edite.
+   ===================================================================== */
+const CANALES = ['mensajería', 'correo', 'teléfono'];
+const ESTADOS = ['Abierta', 'En gestión'];
+const ROLES = ['agente', 'coordinador', 'consulta', 'administrador técnico'];
+
+const Negocio = (() => {
+  const err = (m, extra) => Object.assign({ ok: false, error: m }, extra || {});
+  const ok = (x) => Object.assign({ ok: true }, x || {});
+  const iso = (d) => d.toISOString();
+  const pad = (n, l = 2) => String(n).padStart(l, '0');
+
+  const nuevaBase = (ambiente) => ({
+    version: 1, ambiente, clientes: [], colaboradores: [], solicitudes: [],
+    cambios: [], auditoria: [], respaldos: [], contadores: {}
+  });
+  const col = (db, id) => db.colaboradores.find((c) => c.id === id);
+  const cli = (db, id) => db.clientes.find((c) => c.id === id);
+  const sol = (db, id) => db.solicitudes.find((s) => s.id === id);
+  const nombreCol = (db, id) => (col(db, id) ? col(db, id).nombre : id || '');
+  const nombreCli = (db, id) => (cli(db, id) ? cli(db, id).nombre : id || '');
+  const puedeSerResponsable = (c) => c && (c.rol === 'agente' || c.rol === 'coordinador');
+
+  function auditar(db, usuarioId, accion, detalle, ahora) {
+    db.auditoria.push(Object.freeze({ fecha: iso(ahora), usuarioId, accion, detalle: detalle || '' }));
+  }
+  // Se crea en la misma operación que modifica el dato y queda congelado.
+  function registrarCambio(db, s, usuario, campo, anterior, nuevo, ahora, motivo) {
+    db.cambios.push(Object.freeze({
+      id: 'C' + (db.cambios.length + 1), solicitudId: s.id, fecha: iso(ahora),
+      usuarioId: usuario.id, campo, anterior: String(anterior == null ? '' : anterior),
+      nuevo: String(nuevo == null ? '' : nuevo), motivo: motivo || ''
+    }));
+  }
+  function congelar(db) {
+    db.cambios = db.cambios.map((c) => Object.freeze(c));
+    db.auditoria = db.auditoria.map((a) => Object.freeze(a));
+    return db;
+  }
+
+  /* ---------- Solicitudes ---------- */
+  function buscarDuplicado(db, clienteId, pedido, excluirId) {
+    const p = (pedido || '').trim();
+    if (!clienteId || !p) return null;
+    return db.solicitudes.find((s) => !s.anulada && s.id !== excluirId &&
+      s.clienteId === clienteId && s.pedido.toLowerCase() === p.toLowerCase()) || null;
+  }
+
+  function registrarSolicitud(db, u, d, ahora, opciones) {
+    if (!['agente', 'coordinador'].includes(u.rol)) return err('Tu rol no permite registrar solicitudes.');
+    const faltan = [];
+    if (!d.clienteId) faltan.push('cliente');
+    if (!(d.asunto || '').trim()) faltan.push('asunto');
+    if (!d.canal) faltan.push('canal');
+    if (!d.fechaRecepcion) faltan.push('fecha de recepción');
+    if (!d.responsableId) faltan.push('responsable');
+    if (faltan.length) return err('Falta el campo obligatorio: ' + faltan.join(', ') + '.');
+    if (!CANALES.includes(d.canal)) return err('Canal no válido. Opciones: ' + CANALES.join(', ') + '.');
+    if (!cli(db, d.clienteId)) return err('El cliente no existe en el directorio.');
+    if (isNaN(new Date(d.fechaRecepcion))) return err('La fecha de recepción no es válida.');
+    const r = col(db, d.responsableId);
+    if (!puedeSerResponsable(r)) return err('El responsable debe ser un agente o el coordinador.');
+    if (r.ausente) return err('El responsable está marcado como ausente.');
+    if (u.rol === 'agente' && d.responsableId !== u.id) return err('Un agente solo puede registrar solicitudes de las que es responsable.');
+    const cn = (d.contactoNombre || '').trim(), cm = (d.contactoMedio || '').trim();
+    if ((cn && !cm) || (!cn && cm)) return err('El contacto lleva solo nombre y un medio (teléfono o correo); completa ambos o ninguno.');
+    const pedido = (d.pedido || '').trim();
+    if (!(opciones && opciones.ignorarDuplicado)) {
+      const dup = buscarDuplicado(db, d.clienteId, pedido);
+      if (dup) return err('Posible duplicado: el cliente ya tiene la solicitud ' + dup.ref + ' abierta para ese pedido.', { duplicado: dup });
+    }
+    const anio = ahora.getFullYear();
+    const n = (db.contadores[anio] || 0) + 1;
+    db.contadores[anio] = n;
+    const ref = 'SOL-' + anio + '-' + pad(n, 5);
+    const s = {
+      id: ref, ref, clienteId: d.clienteId,
+      contacto: cn ? { nombre: cn, medio: cm } : null,
+      pedido, asunto: d.asunto.trim(), canal: d.canal, estado: 'Abierta',
+      responsableId: d.responsableId, fechaRecepcion: iso(new Date(d.fechaRecepcion)),
+      fechaRegistro: iso(ahora), registradaPor: u.id, anulada: false, motivoAnulacion: ''
+    };
+    db.solicitudes.push(s);
+    registrarCambio(db, s, u, 'registro', '', 'Solicitud registrada con estado Abierta', ahora);
+    return ok({ solicitud: s });
+  }
+
+  function puedeEditar(u, s) {
+    if (!s || s.anulada) return false;
+    return u.rol === 'coordinador' || (u.rol === 'agente' && s.responsableId === u.id);
+  }
+
+  function editarSolicitud(db, u, id, c, ahora) {
+    const s = sol(db, id);
+    if (!s) return err('La solicitud no existe.');
+    if (s.anulada) return err('La solicitud está anulada y no admite cambios.');
+    if (!puedeEditar(u, s)) return err('Tu rol no permite editar esta solicitud.');
+    const nuevo = {};
+    if (c.clienteId !== undefined && c.clienteId !== s.clienteId) {
+      if (!cli(db, c.clienteId)) return err('El cliente no existe en el directorio.');
+      nuevo.clienteId = c.clienteId;
+    }
+    if (c.asunto !== undefined && c.asunto.trim() !== s.asunto) {
+      if (!c.asunto.trim()) return err('Falta el campo obligatorio: asunto.');
+      nuevo.asunto = c.asunto.trim();
+    }
+    if (c.canal !== undefined && c.canal !== s.canal) {
+      if (!CANALES.includes(c.canal)) return err('Canal no válido. Opciones: ' + CANALES.join(', ') + '.');
+      nuevo.canal = c.canal;
+    }
+    if (c.estado !== undefined && c.estado !== s.estado) {
+      if (!ESTADOS.includes(c.estado)) return err('Estado no válido. Opciones: ' + ESTADOS.join(', ') + '.');
+      nuevo.estado = c.estado;
+    }
+    if (c.pedido !== undefined && c.pedido.trim() !== s.pedido) nuevo.pedido = c.pedido.trim();
+    if (!Object.keys(nuevo).length) return err('No hay cambios para guardar.');
+    if (nuevo.clienteId !== undefined) { registrarCambio(db, s, u, 'cliente', nombreCli(db, s.clienteId), nombreCli(db, nuevo.clienteId), ahora); s.clienteId = nuevo.clienteId; }
+    if (nuevo.pedido !== undefined) { registrarCambio(db, s, u, 'pedido', s.pedido || '(sin pedido)', nuevo.pedido || '(sin pedido)', ahora); s.pedido = nuevo.pedido; }
+    if (nuevo.asunto !== undefined) { registrarCambio(db, s, u, 'asunto', s.asunto, nuevo.asunto, ahora); s.asunto = nuevo.asunto; }
+    if (nuevo.canal !== undefined) { registrarCambio(db, s, u, 'canal', s.canal, nuevo.canal, ahora); s.canal = nuevo.canal; }
+    if (nuevo.estado !== undefined) { registrarCambio(db, s, u, 'estado', s.estado, nuevo.estado, ahora); s.estado = nuevo.estado; }
+    return ok({ solicitud: s });
+  }
+
+  /* ---------- Asignación ---------- */
+  function reasignarUna(db, u, s, nuevoId, motivo, ahora) {
+    const m = (motivo || '').trim();
+    if (!m) return err('La reasignación exige un motivo.');
+    if (s.anulada) return err(s.ref + ': está anulada y no se puede reasignar.');
+    const n = col(db, nuevoId);
+    if (!puedeSerResponsable(n)) return err('El nuevo responsable debe ser un agente o el coordinador.');
+    if (n.ausente) return err('El nuevo responsable está marcado como ausente.');
+    if (n.id === s.responsableId) return err(s.ref + ': ya tiene a ese responsable.');
+    registrarCambio(db, s, u, 'responsable', nombreCol(db, s.responsableId), n.nombre, ahora, m);
+    s.responsableId = n.id;
+    return ok();
+  }
+  function reasignar(db, u, id, nuevoId, motivo, ahora) {
+    const s = sol(db, id);
+    if (!s) return err('La solicitud no existe.');
+    if (u.rol !== 'coordinador') return err('Solo el coordinador reasigna solicitudes de otro agente; solicítaselo.');
+    return reasignarUna(db, u, s, nuevoId, motivo, ahora);
+  }
+  function sinResponsableActivo(db) {
+    return db.solicitudes.filter((s) => !s.anulada && col(db, s.responsableId) && col(db, s.responsableId).ausente);
+  }
+  function asumir(db, u, id, ahora) {
+    const s = sol(db, id);
+    if (!s) return err('La solicitud no existe.');
+    if (u.rol !== 'agente' && u.rol !== 'coordinador') return err('Tu rol no permite asumir solicitudes.');
+    const actual = col(db, s.responsableId);
+    if (!actual || !actual.ausente) return err('Solo se pueden asumir solicitudes sin responsable activo; si el responsable está activo, debe reasignarla el coordinador.');
+    return reasignarUna(db, u, s, u.id, 'Asume por ausencia del responsable', ahora);
+  }
+  function reasignarLote(db, u, ids, nuevoId, motivo, ahora) {
+    if (u.rol !== 'coordinador') return err('Solo el coordinador reasigna por lote.');
+    if (!(motivo || '').trim()) return err('La reasignación exige un motivo.');
+    if (!ids.length) return err('Selecciona al menos una solicitud.');
+    let hechas = 0;
+    for (const id of ids) {
+      const s = sol(db, id);
+      if (!s) continue;
+      const r = reasignarUna(db, u, s, nuevoId, motivo, ahora);
+      if (!r.ok) return err(r.error + ' (reasignadas antes del error: ' + hechas + ')');
+      hechas++;
+    }
+    return ok({ reasignadas: hechas });
+  }
+  function marcarAusencia(db, u, colId, ausente, ahora) {
+    if (u.rol !== 'coordinador') return err('Solo el coordinador marca ausencias.');
+    const c = col(db, colId);
+    if (!puedeSerResponsable(c)) return err('Solo se marca ausencia de agentes o del coordinador.');
+    c.ausente = !!ausente;
+    auditar(db, u.id, ausente ? 'Marcar ausente' : 'Marcar presente', c.nombre, ahora);
+    return ok({ sinResponsable: ausente ? sinResponsableActivo(db).filter((s) => s.responsableId === c.id) : [] });
+  }
+  function anular(db, u, id, motivo, ahora) {
+    const s = sol(db, id);
+    if (!s) return err('La solicitud no existe.');
+    if (u.rol !== 'coordinador') return err('Solo el coordinador anula solicitudes.');
+    if (s.anulada) return err('La solicitud ya está anulada.');
+    if (!(motivo || '').trim()) return err('La anulación exige un motivo.');
+    registrarCambio(db, s, u, 'anulada', 'No', 'Sí', ahora, motivo.trim());
+    s.anulada = true; s.motivoAnulacion = motivo.trim();
+    return ok({ solicitud: s });
+  }
+  // Guardas explícitas: la historia y las solicitudes no se editan ni se borran.
+  const editarCambio = () => err('La historia es inmutable: los cambios registrados no se editan.');
+  const eliminarCambio = () => err('La historia es inmutable: los cambios registrados no se eliminan.');
+  const eliminarSolicitud = () => err('Las solicitudes no se eliminan; solo pueden anularse con motivo.');
+
+  /* ---------- Búsqueda y línea de tiempo ---------- */
+  const ymd = (isoStr) => { const d = new Date(isoStr); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+  function buscar(db, f) {
+    const t = (x) => (x || '').trim().toLowerCase();
+    return db.solicitudes.filter((s) => {
+      if (f.ref && !s.ref.toLowerCase().includes(t(f.ref))) return false;
+      if (f.cliente && !(nombreCli(db, s.clienteId).toLowerCase().includes(t(f.cliente)) || s.clienteId.toLowerCase().includes(t(f.cliente)))) return false;
+      if (f.pedido && !s.pedido.toLowerCase().includes(t(f.pedido))) return false;
+      if (f.responsableId && s.responsableId !== f.responsableId) return false;
+      if (f.estado === 'Anulada' && !s.anulada) return false;
+      if (f.estado && f.estado !== 'Anulada' && (s.anulada || s.estado !== f.estado)) return false;
+      if (f.desde && ymd(s.fechaRecepcion) < f.desde) return false;
+      if (f.hasta && ymd(s.fechaRecepcion) > f.hasta) return false;
+      return true;
+    }).sort((a, b) => b.fechaRegistro.localeCompare(a.fechaRegistro) || b.ref.localeCompare(a.ref));
+  }
+  const lineaDeTiempo = (db, id) => db.cambios.filter((c) => c.solicitudId === id)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha) || a.id.localeCompare(b.id, undefined, { numeric: true }));
+
+  /* ---------- Acceso y datos ---------- */
+  function crearAdminInicial(db, d, ahora) {
+    if (db.colaboradores.length) return err('Ya existen cuentas.');
+    const nombre = (d.nombre || '').trim(), id = (d.id || '').trim().toLowerCase();
+    if (!nombre || !id) return err('Indica el nombre de la persona y un identificador único.');
+    db.colaboradores.push({ id, nombre, rol: 'administrador técnico', ausente: false });
+    auditar(db, id, 'Alta de usuario', nombre + ' (administrador técnico, cuenta inicial)', ahora);
+    return ok();
+  }
+  function crearUsuario(db, u, d, ahora) {
+    if (u.rol !== 'administrador técnico') return err('Solo el administrador técnico crea cuentas.');
+    const nombre = (d.nombre || '').trim(), id = (d.id || '').trim().toLowerCase();
+    if (!nombre) return err('Indica el nombre de una persona.');
+    if (!id) return err('Indica un identificador único de acceso.');
+    if (!ROLES.includes(d.rol)) return err('Rol no válido.');
+    if (col(db, id)) return err('Ese identificador ya está en uso; cada persona tiene su cuenta.');
+    db.colaboradores.push({ id, nombre, rol: d.rol, ausente: false });
+    auditar(db, u.id, 'Alta de usuario', nombre + ' (' + d.rol + ')', ahora);
+    return ok();
+  }
+  function cambiarRol(db, u, id, rol, ahora) {
+    if (u.rol !== 'administrador técnico') return err('Solo el administrador técnico cambia roles.');
+    const c = col(db, id);
+    if (!c) return err('La cuenta no existe.');
+    if (!ROLES.includes(rol)) return err('Rol no válido.');
+    if (c.rol === rol) return err('Esa cuenta ya tiene ese rol.');
+    if (c.rol === 'administrador técnico' && db.colaboradores.filter((x) => x.rol === 'administrador técnico').length < 2)
+      return err('Debe quedar al menos un administrador técnico.');
+    const antes = c.rol; c.rol = rol;
+    auditar(db, u.id, 'Cambio de rol', c.nombre + ': ' + antes + ' → ' + rol, ahora);
+    return ok();
+  }
+  function registrarIngreso(db, u, ahora) {
+    auditar(db, u.id, 'Inicio de sesión', 'Éxito (selector de usuario, sin contraseña)', ahora);
+  }
+
+  /* ---------- Respaldo y datos ---------- */
+  function exportar(db, u, ahora) {
+    if (u.rol !== 'administrador técnico') return err('Solo el administrador técnico exporta respaldos.');
+    db.respaldos.push({ tipo: 'exportación', fecha: iso(ahora), usuarioId: u.id, resultado: 'Éxito',
+      detalle: db.solicitudes.length + ' solicitudes, ' + db.cambios.length + ' cambios' });
+    auditar(db, u.id, 'Exportar respaldo', db.solicitudes.length + ' solicitudes', ahora);
+    return ok({ texto: JSON.stringify(db, null, 1) });
+  }
+  function leerRespaldo(texto, ambiente) {
+    let d;
+    try { d = JSON.parse(texto); } catch (e) { return err('El archivo no es un JSON válido.'); }
+    const claves = ['clientes', 'colaboradores', 'solicitudes', 'cambios', 'auditoria', 'respaldos'];
+    if (!d || d.version !== 1 || claves.some((k) => !Array.isArray(d[k])) || typeof d.contadores !== 'object')
+      return err('El archivo no tiene la estructura de un respaldo de esta aplicación.');
+    if (ambiente && d.ambiente !== ambiente) return err('El respaldo es del ambiente «' + d.ambiente + '»; no se mezcla con «' + ambiente + '».');
+    return ok({ db: congelar(d) });
+  }
+  function importarRespaldo(db, u, texto, ahora) {
+    if (u.rol !== 'administrador técnico') return err('Solo el administrador técnico importa respaldos.');
+    const r = leerRespaldo(texto, db.ambiente);
+    if (!r.ok) return r;
+    r.db.respaldos.push({ tipo: 'importación', fecha: iso(ahora), usuarioId: u.id, resultado: 'Éxito',
+      detalle: r.db.solicitudes.length + ' solicitudes, ' + r.db.cambios.length + ' cambios' });
+    auditar(r.db, u.id, 'Importar respaldo', r.db.solicitudes.length + ' solicitudes', ahora);
+    return ok({ db: r.db });
+  }
+  // Prueba de recuperación: carga el respaldo aparte y compara conteos con los datos actuales.
+  function probarRecuperacion(db, u, texto, ahora) {
+    if (u.rol !== 'administrador técnico') return err('Solo el administrador técnico prueba la recuperación.');
+    const t0 = performance.now();
+    const r = leerRespaldo(texto, db.ambiente);
+    if (!r.ok) return r;
+    const ms = Math.round(performance.now() - t0);
+    const coincide = r.db.solicitudes.length === db.solicitudes.length && r.db.cambios.length === db.cambios.length;
+    const detalle = 'Respaldo: ' + r.db.solicitudes.length + ' solicitudes y ' + r.db.cambios.length + ' cambios; actual: ' +
+      db.solicitudes.length + ' y ' + db.cambios.length + '; tiempo de lectura ' + ms + ' ms';
+    db.respaldos.push({ tipo: 'prueba de recuperación', fecha: iso(ahora), usuarioId: u.id, resultado: coincide ? 'Coincide' : 'No coincide', detalle });
+    auditar(db, u.id, 'Prueba de recuperación', coincide ? 'Coincide' : 'No coincide', ahora);
+    return ok({ coincide, detalle });
+  }
+  function parseCSV(texto) {
+    const lineas = texto.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim());
+    if (!lineas.length) return [];
+    const sep = (lineas[0].match(/;/g) || []).length > (lineas[0].match(/,/g) || []).length ? ';' : ',';
+    const cortar = (l) => {
+      const out = []; let cur = '', q = false;
+      for (let i = 0; i < l.length; i++) {
+        const ch = l[i];
+        if (ch === '"') { if (q && l[i + 1] === '"') { cur += '"'; i++; } else q = !q; }
+        else if (ch === sep && !q) { out.push(cur); cur = ''; }
+        else cur += ch;
+      }
+      out.push(cur); return out.map((x) => x.trim());
+    };
+    const enc = cortar(lineas[0]).map((x) => x.toLowerCase());
+    return lineas.slice(1).map((l) => { const v = cortar(l); const o = {}; enc.forEach((h, i) => (o[h] = v[i] || '')); return o; });
+  }
+  function importarClientes(db, u, texto, ahora) {
+    if (u.rol !== 'administrador técnico') return err('Solo el administrador técnico importa el directorio de clientes.');
+    let filas;
+    const t = texto.replace(/^﻿/, '').trim();
+    if (t[0] === '[' || t[0] === '{') {
+      try { const j = JSON.parse(t); filas = Array.isArray(j) ? j : j.clientes; } catch (e) { return err('El archivo no es un JSON válido.'); }
+      if (!Array.isArray(filas)) return err('El JSON debe ser una lista de clientes o tener la clave «clientes».');
+    } else filas = parseCSV(t);
+    let nuevos = 0, actualizados = 0, rechazados = 0;
+    for (const f of filas) {
+      const id = String(f.id || '').trim(), nombre = String(f.nombre || '').trim();
+      if (!id || !nombre) { rechazados++; continue; }
+      const e = cli(db, id);
+      if (e) { if (e.nombre !== nombre) { e.nombre = nombre; actualizados++; } }
+      else { db.clientes.push({ id, nombre }); nuevos++; }
+    }
+    auditar(db, u.id, 'Importar clientes', nuevos + ' nuevos, ' + actualizados + ' actualizados, ' + rechazados + ' rechazados', ahora);
+    return ok({ nuevos, actualizados, rechazados });
+  }
+
+  return { nuevaBase, col, cli, sol, nombreCol, nombreCli, puedeSerResponsable, puedeEditar, registrarSolicitud, editarSolicitud,
+    buscarDuplicado, reasignar, reasignarLote, asumir, sinResponsableActivo, marcarAusencia, anular, editarCambio, eliminarCambio,
+    eliminarSolicitud, buscar, lineaDeTiempo, crearAdminInicial, crearUsuario, cambiarRol, registrarIngreso, exportar, importarRespaldo,
+    probarRecuperacion, importarClientes, congelar, auditar, ymd };
+})();
+
+/* =====================================================================
+   DATOS FICTICIOS DE CAPACITACIÓN (se generan con las mismas reglas)
+   ===================================================================== */
+function semillaCapacitacion() {
+  const N = Negocio;
+  const db = N.nuevaBase('capacitacion');
+  db.clientes = [
+    ['CLI-001', 'Colegio Los Cedros'], ['CLI-002', 'Colegio Nuevo Horizonte'], ['CLI-003', 'Papelería La Esquina'],
+    ['CLI-004', 'Ferretería El Tornillo Feliz'], ['CLI-005', 'Clínica Dental Sonrisas'], ['CLI-006', 'Consultorio Jurídico Pérez y Asociados'],
+    ['CLI-007', 'Contadores Asociados del Valle'], ['CLI-008', 'Restaurante El Fogón'], ['CLI-009', 'Taller Mecánico Rápido'],
+    ['CLI-010', 'Colegio Rayuela'], ['CLI-011', 'Inmobiliaria Casa Segura'], ['CLI-012', 'Agencia de Viajes Brújula'],
+    ['CLI-013', 'Gimnasio Fuerza Viva'], ['CLI-014', 'Droguería Salud Total'], ['CLI-015', 'Constructora Cimiento']
+  ].map(([id, nombre]) => ({ id, nombre }));
+  db.colaboradores = [
+    ['ana.ruiz', 'Ana Ruiz', 'agente'], ['luis.mora', 'Luis Mora', 'agente'], ['camila.pardo', 'Camila Pardo', 'agente'],
+    ['diego.salas', 'Diego Salas', 'agente'], ['marta.velez', 'Marta Vélez', 'coordinador'], ['julian.ortiz', 'Julián Ortiz (Ventas)', 'consulta'],
+    ['soporte', 'Soporte Técnico (proveedor)', 'administrador técnico']
+  ].map(([id, nombre, rol]) => ({ id, nombre, rol, ausente: false }));
+  const U = (id) => N.col(db, id);
+  const T = (d, h, m) => new Date(2026, 10, d, h, m);
+  const filas = [
+    [2, 8, 15, 'ana.ruiz', 1, 'Entrega incompleta de resmas tamaño carta', 'teléfono', 'PED1001'],
+    [2, 9, 40, 'luis.mora', 3, 'Factura con valor distinto al cotizado', 'correo', 'PED1002'],
+    [3, 10, 5, 'camila.pardo', 5, 'Cambio de producto por referencia errada', 'mensajería', 'PED1007'],
+    [3, 11, 30, 'diego.salas', 2, 'Consulta por fecha de entrega de cuadernos', 'teléfono', 'PED1010'],
+    [4, 8, 50, 'ana.ruiz', 8, 'Solicitud de cotización de tóner', 'correo', ''],
+    [4, 14, 10, 'luis.mora', 4, 'Caja de bolígrafos llegó dañada', 'mensajería', 'PED1015'],
+    [5, 9, 0, 'camila.pardo', 6, 'Aclarar frecuencia del pedido periódico mensual', 'correo', ''],
+    [5, 15, 20, 'diego.salas', 9, 'Entrega fuera del horario acordado', 'teléfono', 'PED1021'],
+    [6, 8, 30, 'ana.ruiz', 10, 'Faltan tres cajas de marcadores', 'mensajería', 'PED1025'],
+    [6, 10, 45, 'luis.mora', 7, 'Corrección de dirección de entrega', 'correo', 'PED1026'],
+    [9, 9, 15, 'camila.pardo', 11, 'Consulta por precio de papel carta', 'teléfono', ''],
+    [9, 11, 0, 'diego.salas', 1, 'Reclamo por segunda entrega incompleta', 'mensajería', 'PED1048'],
+    [10, 8, 20, 'ana.ruiz', 12, 'Cambio de contacto para facturación', 'correo', ''],
+    [10, 13, 35, 'luis.mora', 13, 'Producto distinto al pedido', 'teléfono', 'PED1033'],
+    [11, 9, 50, 'camila.pardo', 14, 'Solicitud de nota crédito', 'correo', 'PED1036'],
+    [11, 16, 5, 'diego.salas', 15, 'Consulta por estado del pedido', 'mensajería', 'PED1040'],
+    [12, 8, 40, 'ana.ruiz', 3, 'Pedido repetido por error del cliente', 'teléfono', 'PED1042'],
+    [12, 10, 25, 'luis.mora', 2, 'Retraso en entrega de formatos', 'correo', 'PED1044'],
+    [13, 9, 10, 'camila.pardo', 5, 'Aclaración sobre garantía de sillas', 'mensajería', ''],
+    [13, 14, 45, 'diego.salas', 1, 'Faltante en la entrega del pedido PED1048', 'teléfono', 'PED1048'],
+    [16, 8, 55, 'ana.ruiz', 8, 'Cambio de presentación de servilletas', 'correo', 'PED1050'],
+    [16, 11, 15, 'luis.mora', 4, 'Entrega en sede equivocada', 'mensajería', 'PED1052'],
+    [17, 9, 30, 'camila.pardo', 9, 'Consulta por descuento por volumen', 'teléfono', ''],
+    [17, 15, 0, 'diego.salas', 6, 'Factura duplicada', 'correo', 'PED1055'],
+    [18, 10, 10, 'ana.ruiz', 7, 'Solicitud de visita del asesor comercial', 'mensajería', '']
+  ];
+  const refs = [];
+  for (const [d, h, m, ag, c, asunto, canal, pedido] of filas) {
+    const f = T(d, h, m);
+    const r = N.registrarSolicitud(db, U(ag), { clienteId: db.clientes[c - 1].id, asunto, canal, pedido,
+      fechaRecepcion: f.toISOString(), responsableId: ag, contactoNombre: 'Contacto ' + db.clientes[c - 1].nombre.split(' ')[0],
+      contactoMedio: canal === 'correo' ? 'compras@ejemplo.test' : '300 000 0000' }, T(d, h, m + 6), { ignorarDuplicado: true });
+    refs.push(r.solicitud.id);
+  }
+  const ed = (i, u, c, d, h, m) => N.editarSolicitud(db, U(u), refs[i - 1], c, T(d, h, m));
+  ed(1, 'ana.ruiz', { estado: 'En gestión' }, 2, 11, 0);
+  ed(3, 'camila.pardo', { estado: 'En gestión' }, 4, 9, 30);
+  ed(8, 'diego.salas', { estado: 'En gestión' }, 6, 9, 0);
+  ed(12, 'diego.salas', { estado: 'En gestión' }, 9, 13, 0);
+  ed(21, 'ana.ruiz', { estado: 'En gestión' }, 16, 14, 0);
+  N.reasignar(db, U('marta.velez'), refs[5], 'ana.ruiz', 'Balance de carga entre agentes', T(5, 10, 0));
+  N.reasignar(db, U('marta.velez'), refs[11], 'camila.pardo', 'Se asigna a quien atendió un caso previo del cliente', T(10, 9, 0));
+  N.reasignar(db, U('marta.velez'), refs[11], 'ana.ruiz', 'Camila queda con la cartera de clínicas', T(12, 9, 30));
+  N.anular(db, U('marta.velez'), refs[16], 'Registrada por duplicidad; el cliente repitió la solicitud', T(12, 11, 0));
+  db.respaldos = []; db.auditoria = [];
+  return N.congelar(db);
+}
+
+/* =====================================================================
+   INTERFAZ
+   ===================================================================== */
+const esc = (x) => String(x == null ? '' : x).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = (isoStr) => (isoStr ? new Date(isoStr).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) : '');
+const pad2 = (n) => String(n).padStart(2, '0');
+const aInputLocal = (d) => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+
+const ambientes = { capacitacion: semillaCapacitacion(), trabajo: Negocio.nuevaBase('trabajo') };
+const ui = { ambiente: 'capacitacion', usuarioId: null, tab: 'bandeja', filtros: {}, sel: null, aviso: null, sucio: false, borrador: null };
+const db = () => ambientes[ui.ambiente];
+const usuario = () => Negocio.col(db(), ui.usuarioId);
+const TABS = {
+  'agente': [['bandeja', 'Bandeja'], ['registrar', 'Registrar solicitud']],
+  'coordinador': [['bandeja', 'Bandeja'], ['registrar', 'Registrar solicitud'], ['panel', 'Panel del coordinador']],
+  'consulta': [['bandeja', 'Bandeja (solo consulta)']],
+  'administrador técnico': [['cuentas', 'Cuentas'], ['auditoria', 'Auditoría'], ['respaldo', 'Respaldo y datos']]
+};
+
+function aviso(msg, tipo) { ui.aviso = { msg, tipo: tipo || 'info' }; }
+function mutado() { ui.sucio = true; }
+window.addEventListener('beforeunload', (e) => { if (ui.sucio) { e.preventDefault(); e.returnValue = ''; } });
+
+function dialogo(titulo, cuerpo, botones) {
+  return new Promise((res) => {
+    const d = document.getElementById('dlg');
+    d.innerHTML = '<form method="dialog"><h3>' + esc(titulo) + '</h3><p>' + cuerpo + '</p><div class="fila fin">' +
+      botones.map((b) => '<button class="' + (b.clase || 'sec') + '" value="' + esc(b.valor) + '">' + esc(b.texto) + '</button>').join('') + '</div></form>';
+    d.onclose = () => res(d.returnValue);
+    d.showModal();
+  });
+}
+function descargar(nombre, texto) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([texto], { type: 'application/json' }));
+  a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+const opciones = (lista, sel, vacio) => (vacio ? '<option value="">' + esc(vacio) + '</option>' : '') +
+  lista.map(([v, t]) => '<option value="' + esc(v) + '"' + (v === sel ? ' selected' : '') + '>' + esc(t) + '</option>').join('');
+const responsables = (soloActivos) => db().colaboradores.filter((c) => Negocio.puedeSerResponsable(c) && !(soloActivos && c.ausente));
+
+/* ---------- Render principal ---------- */
+function render() {
+  const app = document.getElementById('app');
+  const amb = ui.ambiente === 'capacitacion';
+  const u = usuario();
+  let html = '<header class="top"><h1>Comercial Aurora · Gestión de solicitudes (V1)</h1><div class="der">' +
+    (u ? '<span>' + esc(u.nombre) + ' · <b>' + esc(u.rol) + '</b></span><button class="link" data-act="salir">Cambiar usuario</button>' : '') +
+    '<button class="link" data-act="ambiente">Ir a ambiente de ' + (amb ? 'trabajo' : 'capacitación') + '</button></div></header>' +
+    '<div class="banda ' + (amb ? 'cap' : 'trab') + '">' + (amb ? 'AMBIENTE DE CAPACITACIÓN · solo registros ficticios; nada de lo que hagas aquí llega a los datos de trabajo.'
+      : 'AMBIENTE DE TRABAJO · la V1 no tiene contraseñas ni respaldo programado: no cargues datos reales de clientes.') + '</div><main>';
+  if (ui.aviso) html += '<div class="aviso-msg ' + ui.aviso.tipo + '" role="status">' + esc(ui.aviso.msg) + '</div>';
+  html += !u ? vistaIngreso() : vistaApp(u);
+  app.innerHTML = html + '</main>';
+  if (u && ui.tab === 'bandeja' && u.rol !== 'administrador técnico') actualizarTabla();
+}
+function vistaIngreso() {
+  const d = db();
+  if (!d.colaboradores.length) {
+    return '<div class="card login"><h2>Crear la cuenta del administrador técnico</h2><p class="suave">Este ambiente aún no tiene cuentas. El administrador técnico crea después las demás.</p>' +
+      '<form data-form="admin-inicial"><label>Nombre de la persona</label><input name="nombre" required><label>Identificador único de acceso</label><input name="id" required><p><button class="prim">Crear cuenta</button></p></form></div>';
+  }
+  return '<div class="card login"><h2>Ingreso</h2><p class="suave">Selecciona tu cuenta. En la V1 no hay contraseña: es una simulación para probar los flujos.</p>' +
+    '<form data-form="ingreso"><label for="uid">Persona</label><select id="uid" name="uid">' +
+    opciones(d.colaboradores.map((c) => [c.id, c.nombre + ' — ' + c.rol])) + '</select><p><button class="prim">Entrar</button></p></form></div>';
+}
+function vistaApp(u) {
+  const tabs = TABS[u.rol];
+  if (!tabs.some((t) => t[0] === ui.tab)) ui.tab = tabs[0][0];
+  let h = '<nav class="tabs">' + tabs.map(([k, t]) => '<button data-act="tab" data-v="' + k + '" class="' + (ui.tab === k ? 'on' : '') + '">' + esc(t) + '</button>').join('') + '</nav>';
+  const v = { bandeja: vistaBandeja, registrar: vistaRegistrar, panel: vistaPanel, cuentas: vistaCuentas, auditoria: vistaAuditoria, respaldo: vistaRespaldo }[ui.tab];
+  return h + v(u);
+}
+
+/* ---------- Bandeja y detalle ---------- */
+function vistaBandeja(u) {
+  const f = ui.filtros;
+  return '<div class="dos"><div><div class="card"><h2>Solicitudes</h2><div class="grid" data-filtros>' +
+    '<div><label>Referencia</label><input data-f="ref" value="' + esc(f.ref) + '" placeholder="SOL-2026-…"></div>' +
+    '<div><label>Cliente</label><input data-f="cliente" value="' + esc(f.cliente) + '"></div>' +
+    '<div><label>Pedido</label><input data-f="pedido" value="' + esc(f.pedido) + '" placeholder="PED1048"></div>' +
+    '<div><label>Responsable</label><select data-f="responsableId">' + opciones(db().colaboradores.filter((c) => Negocio.puedeSerResponsable(c)).map((c) => [c.id, c.nombre]), f.responsableId, 'Todos') + '</select></div>' +
+    '<div><label>Estado</label><select data-f="estado">' + opciones(ESTADOS.concat(['Anulada']).map((e) => [e, e]), f.estado, 'Todos') + '</select></div>' +
+    '<div><label>Recibida desde</label><input type="date" data-f="desde" value="' + esc(f.desde) + '"></div>' +
+    '<div><label>Recibida hasta</label><input type="date" data-f="hasta" value="' + esc(f.hasta) + '"></div></div>' +
+    '<p class="suave" id="conteo"></p><div class="scroll" id="tabla"></div></div></div><div id="detalle">' + vistaDetalle(u) + '</div></div>';
+}
+function actualizarTabla() {
+  const d = db();
+  const lista = Negocio.buscar(d, ui.filtros);
+  const anuladas = d.solicitudes.filter((s) => s.anulada).length;
+  const c = document.getElementById('conteo'), t = document.getElementById('tabla');
+  if (!c || !t) return;
+  c.textContent = lista.length + ' de ' + d.solicitudes.length + ' solicitudes registradas (incluye ' + anuladas + ' anuladas; las anuladas cuentan en la cobertura de registro).';
+  t.innerHTML = '<table class="tabla"><thead><tr><th>Referencia</th><th>Cliente</th><th>Pedido</th><th>Asunto</th><th>Canal</th><th>Estado</th><th>Responsable</th><th>Recibida</th></tr></thead><tbody>' +
+    (lista.length ? lista.map((s) => {
+      const r = Negocio.col(d, s.responsableId);
+      return '<tr data-id="' + esc(s.id) + '" class="' + (ui.sel === s.id ? 'sel' : '') + '"><td>' + esc(s.ref) + '</td><td>' + esc(Negocio.nombreCli(d, s.clienteId)) + '</td><td>' + esc(s.pedido || '—') +
+        '</td><td>' + esc(s.asunto) + '</td><td>' + esc(s.canal) + '</td><td>' + (s.anulada ? '<span class="chip mal">Anulada</span>' : '<span class="chip">' + esc(s.estado) + '</span>') +
+        '</td><td>' + esc(r ? r.nombre : '') + (r && r.ausente && !s.anulada ? ' <span class="chip aviso">sin responsable activo</span>' : '') + '</td><td>' + esc(fmt(s.fechaRecepcion)) + '</td></tr>';
+    }).join('') : '<tr><td colspan="8" class="suave">No hay solicitudes con esos filtros.</td></tr>') + '</tbody></table>';
+}
+function vistaDetalle(u) {
+  const d = db();
+  const s = ui.sel && Negocio.sol(d, ui.sel);
+  if (!s) return '<div class="card"><h2>Detalle</h2><p class="suave">Elige una solicitud de la bandeja para ver su historia y actuar sobre ella.</p></div>';
+  const r = Negocio.col(d, s.responsableId);
+  const sinActivo = r && r.ausente && !s.anulada;
+  let h = '<div class="card"><h2>' + esc(s.ref) + (s.anulada ? ' <span class="chip mal">Anulada</span>' : ' <span class="chip">' + esc(s.estado) + '</span>') + '</h2><dl class="kv">' +
+    '<dt>Cliente</dt><dd>' + esc(Negocio.nombreCli(d, s.clienteId)) + '</dd>' +
+    '<dt>Contacto</dt><dd>' + (s.contacto ? esc(s.contacto.nombre + ' · ' + s.contacto.medio) : '—') + '</dd>' +
+    '<dt>Pedido</dt><dd>' + esc(s.pedido || '— (sin pedido)') + '</dd><dt>Asunto</dt><dd>' + esc(s.asunto) + '</dd><dt>Canal</dt><dd>' + esc(s.canal) + '</dd>' +
+    '<dt>Responsable</dt><dd>' + esc(r ? r.nombre : '') + (sinActivo ? ' <span class="chip aviso">sin responsable activo</span>' : '') + '</dd>' +
+    '<dt>Recibida</dt><dd>' + esc(fmt(s.fechaRecepcion)) + '</dd><dt>Registrada</dt><dd>' + esc(fmt(s.fechaRegistro)) + '</dd>' +
+    (s.anulada ? '<dt>Motivo de anulación</dt><dd>' + esc(s.motivoAnulacion) + '</dd>' : '') + '</dl>';
+  if (u.rol === 'consulta') h += '<p class="suave">Tu rol es de consulta: puedes ver, no modificar.</p>';
+  if (Negocio.puedeEditar(u, s)) {
+    h += '<h3>Actualizar</h3><form data-form="editar"><div class="grid"><div><label>Estado</label><select name="estado">' + opciones(ESTADOS.map((e) => [e, e]), s.estado) + '</select></div>' +
+      '<div><label>Canal</label><select name="canal">' + opciones(CANALES.map((e) => [e, e]), s.canal) + '</select></div>' +
+      '<div><label>Pedido</label><input name="pedido" value="' + esc(s.pedido) + '"></div>' +
+      '<div><label>Cliente</label><select name="clienteId">' + opciones(d.clientes.map((c) => [c.id, c.nombre]), s.clienteId) + '</select></div></div>' +
+      '<label>Asunto</label><input name="asunto" value="' + esc(s.asunto) + '"><p><button class="prim">Guardar cambios</button></p></form>';
+  }
+  if (u.rol === 'coordinador' && !s.anulada) {
+    h += '<h3>Reasignar</h3><form data-form="reasignar"><label>Nuevo responsable</label><select name="nuevo">' +
+      opciones(responsables(true).filter((c) => c.id !== s.responsableId).map((c) => [c.id, c.nombre])) + '</select><label>Motivo (obligatorio)</label><input name="motivo"><p><button class="sec">Reasignar</button></p></form>' +
+      '<h3>Anular</h3><form data-form="anular"><label>Motivo (obligatorio)</label><input name="motivo"><p><button class="pel">Anular solicitud</button></p></form>';
+  }
+  if (u.rol === 'agente' && !s.anulada && s.responsableId !== u.id) {
+    h += sinActivo ? '<h3>Asumir</h3><p class="suave">Esta solicitud no tiene responsable activo.</p><p><button class="prim" data-act="asumir">Asumir la solicitud</button></p>'
+      : '<h3>Reasignar</h3><p class="suave">El responsable actual está activo: la reasignación la hace el coordinador.</p><p><button class="sec" data-act="intentar-reasignar">Intentar reasignar</button></p>';
+  }
+  h += '<h3>Línea de tiempo</h3><ul class="linea">' + Negocio.lineaDeTiempo(d, s.id).map((c) =>
+    '<li><span class="cuando">' + esc(fmt(c.fecha)) + ' · ' + esc(Negocio.nombreCol(d, c.usuarioId)) + '</span><br>' +
+    (c.campo === 'registro' ? esc(c.nuevo) : '<b>' + esc(c.campo) + '</b>: ' + esc(c.anterior) + ' → ' + esc(c.nuevo)) + (c.motivo ? '<br><i>Motivo: ' + esc(c.motivo) + '</i>' : '') + '</li>').join('') + '</ul></div>';
+  return h;
+}
+
+/* ---------- Registro ---------- */
+function vistaRegistrar(u) {
+  const d = db();
+  const b = ui.borrador || {};
+  const resp = u.rol === 'agente' ? [u] : responsables(true);
+  const v = (k) => esc(b[k] || '');
+  return '<div class="card"><h2>Registrar solicitud</h2><p class="suave">Se registra en una sola acción. Obligatorios: cliente, asunto, canal, fecha de recepción y responsable.</p>' +
+    (d.clientes.length ? '' : '<p class="aviso-msg error">El directorio de clientes está vacío; el administrador técnico debe importarlo.</p>') +
+    '<form data-form="registrar" novalidate><div class="grid"><div><label>Cliente *</label><select name="clienteId">' + opciones(d.clientes.map((c) => [c.id, c.nombre]), b.clienteId, 'Elige un cliente') + '</select></div>' +
+    '<div><label>Pedido (opcional)</label><input name="pedido" placeholder="PED1048" value="' + v('pedido') + '"></div>' +
+    '<div><label>Canal *</label><select name="canal">' + opciones(CANALES.map((c) => [c, c]), b.canal, 'Elige un canal') + '</select></div>' +
+    '<div><label>Fecha y hora de recepción *</label><input type="datetime-local" name="fechaRecepcion" value="' + esc(b.fechaRecepcion || aInputLocal(new Date())) + '"></div>' +
+    '<div><label>Responsable *</label><select name="responsableId">' + opciones(resp.map((c) => [c.id, c.nombre]), u.rol === 'agente' ? u.id : b.responsableId, u.rol === 'agente' ? '' : 'Elige un responsable') + '</select></div></div>' +
+    '<label>Asunto *</label><input name="asunto" value="' + v('asunto') + '"><h3>Contacto (solo nombre y un medio)</h3><div class="grid"><div><label>Nombre</label><input name="contactoNombre" value="' + v('contactoNombre') + '"></div>' +
+    '<div><label>Teléfono o correo</label><input name="contactoMedio" value="' + v('contactoMedio') + '"></div></div><p><button class="prim">Guardar solicitud</button></p></form></div>';
+}
+
+/* ---------- Panel del coordinador ---------- */
+function vistaPanel() {
+  const d = db();
+  const sin = Negocio.sinResponsableActivo(d);
+  return '<div class="card"><h2>Colaboradores</h2><table class="tabla"><thead><tr><th>Persona</th><th>Rol</th><th>Situación</th><th></th></tr></thead><tbody>' +
+    d.colaboradores.filter(Negocio.puedeSerResponsable).map((c) => '<tr><td>' + esc(c.nombre) + '</td><td>' + esc(c.rol) + '</td><td>' + (c.ausente ? '<span class="chip aviso">Ausente</span>' : '<span class="chip ok">Presente</span>') +
+      '</td><td><button class="sec" data-act="ausencia" data-v="' + esc(c.id) + '" data-aus="' + (c.ausente ? '0' : '1') + '">' + (c.ausente ? 'Marcar presente' : 'Marcar ausente') + '</button></td></tr>').join('') + '</tbody></table></div>' +
+    '<div class="card"><h2>Solicitudes sin responsable activo (' + sin.length + ')</h2>' + (sin.length ?
+      '<form data-form="lote"><div class="scroll"><table class="tabla"><thead><tr><th></th><th>Referencia</th><th>Cliente</th><th>Asunto</th><th>Responsable ausente</th></tr></thead><tbody>' +
+      sin.map((s) => '<tr><td><input type="checkbox" name="ids" value="' + esc(s.id) + '" checked style="width:auto"></td><td>' + esc(s.ref) + '</td><td>' + esc(Negocio.nombreCli(d, s.clienteId)) + '</td><td>' + esc(s.asunto) + '</td><td>' + esc(Negocio.nombreCol(d, s.responsableId)) + '</td></tr>').join('') +
+      '</tbody></table></div><div class="grid"><div><label>Nuevo responsable</label><select name="nuevo">' + opciones(responsables(true).map((c) => [c.id, c.nombre])) + '</select></div>' +
+      '<div><label>Motivo único (obligatorio)</label><input name="motivo"></div></div><p><button class="prim">Reasignar las seleccionadas</button></p></form>'
+      : '<p class="suave">No hay solicitudes sin responsable activo.</p>') + '</div>';
+}
+
+/* ---------- Administración ---------- */
+function vistaCuentas() {
+  const d = db();
+  return '<div class="card"><h2>Cuentas</h2><table class="tabla"><thead><tr><th>Identificador</th><th>Persona</th><th>Rol</th><th>Cambiar rol</th></tr></thead><tbody>' +
+    d.colaboradores.map((c) => '<tr><td>' + esc(c.id) + '</td><td>' + esc(c.nombre) + '</td><td>' + esc(c.rol) + '</td><td><form data-form="rol" class="fila"><input type="hidden" name="id" value="' + esc(c.id) + '"><select name="rol" style="width:auto">' +
+      opciones(ROLES.map((r) => [r, r]), c.rol) + '</select><button class="sec">Aplicar</button></form></td></tr>').join('') + '</tbody></table></div>' +
+    '<div class="card"><h2>Nueva cuenta</h2><p class="suave">Una cuenta por persona; no se permiten cuentas compartidas.</p><form data-form="usuario"><div class="grid"><div><label>Nombre de la persona</label><input name="nombre"></div>' +
+    '<div><label>Identificador único de acceso</label><input name="id"></div><div><label>Rol</label><select name="rol">' + opciones(ROLES.map((r) => [r, r])) + '</select></div></div><p><button class="prim">Crear cuenta</button></p></form></div>';
+}
+function vistaAuditoria() {
+  const d = db();
+  return '<div class="card"><h2>Registro de auditoría</h2><p class="suave">Ingresos y acciones administrativas. En la V1 no existe ingreso fallido porque no hay contraseñas.</p><div class="scroll"><table class="tabla"><thead><tr><th>Fecha</th><th>Persona</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>' +
+    (d.auditoria.length ? d.auditoria.slice().reverse().map((a) => '<tr><td>' + esc(fmt(a.fecha)) + '</td><td>' + esc(Negocio.nombreCol(d, a.usuarioId)) + '</td><td>' + esc(a.accion) + '</td><td>' + esc(a.detalle) + '</td></tr>').join('')
+      : '<tr><td colspan="4" class="suave">Sin registros todavía.</td></tr>') + '</tbody></table></div></div>';
+}
+function vistaRespaldo() {
+  const d = db();
+  const ult = d.respaldos.slice().reverse().find((r) => r.tipo === 'prueba de recuperación');
+  return '<div class="card"><h2>Respaldo manual</h2><p class="suave">La V1 no genera respaldos programados: el respaldo es esta exportación manual a JSON. Como administrador técnico no ves el contenido de las solicitudes, solo sus conteos: <b>' +
+    d.solicitudes.length + ' solicitudes, ' + d.cambios.length + ' cambios, ' + d.clientes.length + ' clientes</b>.</p><div class="fila"><button class="prim" data-act="exportar">Exportar respaldo</button></div>' +
+    '<h3>Importar o probar un respaldo</h3><div class="grid"><div><label>Importar respaldo (reemplaza los datos de este ambiente)</label><input type="file" accept=".json" data-file="importar"></div>' +
+    '<div><label>Probar recuperación (compara conteos sin reemplazar nada)</label><input type="file" accept=".json" data-file="probar"></div>' +
+    '<div><label>Importar directorio de clientes (CSV o JSON con id y nombre)</label><input type="file" accept=".csv,.json" data-file="clientes"></div></div></div>' +
+    '<div class="card"><h2>Procedimiento de recuperación</h2><ol><li>El administrador técnico exporta un respaldo y lo guarda fuera de este equipo.</li><li>Para probarlo, elige «Probar recuperación» con ese archivo: la aplicación lo lee aparte y compara el número de solicitudes y de cambios.</li>' +
+    '<li>Para restaurar, elige «Importar respaldo»; reemplaza los datos del ambiente actual.</li><li>Responsables: administrador técnico (proveedor) y coordinador. Frecuencia y tiempo máximo de recuperación: <b>[por definir]</b>.</li></ol>' +
+    '<p>Última prueba de recuperación: ' + (ult ? '<b>' + esc(ult.resultado) + '</b> · ' + esc(fmt(ult.fecha)) + ' · ' + esc(ult.detalle) : '<span class="chip aviso">Aún no hay una prueba registrada</span>') + '</p></div>' +
+    '<div class="card"><h2>Registro de respaldos</h2><table class="tabla"><thead><tr><th>Fecha</th><th>Tipo</th><th>Resultado</th><th>Detalle</th></tr></thead><tbody>' +
+    (d.respaldos.length ? d.respaldos.slice().reverse().map((r) => '<tr><td>' + esc(fmt(r.fecha)) + '</td><td>' + esc(r.tipo) + '</td><td>' + esc(r.resultado) + '</td><td>' + esc(r.detalle) + '</td></tr>').join('') : '<tr><td colspan="4" class="suave">Sin registros todavía.</td></tr>') + '</tbody></table></div>';
+}
+
+/* ---------- Eventos ---------- */
+const app = document.getElementById('app');
+const val = (fd, k) => (fd.get(k) == null ? '' : String(fd.get(k)));
+
+app.addEventListener('click', async (e) => {
+  const fila = e.target.closest('tr[data-id]');
+  if (fila && !e.target.closest('button')) { ui.sel = fila.dataset.id; ui.aviso = null; render(); return; }
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act, u = usuario(), ahora = new Date();
+  ui.aviso = null;
+  if (act === 'tab') { ui.tab = b.dataset.v; }
+  else if (act === 'ambiente') { ui.ambiente = ui.ambiente === 'capacitacion' ? 'trabajo' : 'capacitacion'; ui.usuarioId = null; ui.sel = null; ui.borrador = null; ui.tab = 'bandeja'; }
+  else if (act === 'salir') { ui.usuarioId = null; ui.sel = null; ui.borrador = null; }
+  else if (act === 'asumir') { const r = Negocio.asumir(db(), u, ui.sel, ahora); aviso(r.ok ? 'Solicitud asumida.' : r.error, r.ok ? 'ok' : 'error'); if (r.ok) mutado(); }
+  else if (act === 'intentar-reasignar') { const r = Negocio.reasignar(db(), u, ui.sel, u.id, 'intento', ahora); aviso(r.error, 'error'); }
+  else if (act === 'ausencia') {
+    const r = Negocio.marcarAusencia(db(), u, b.dataset.v, b.dataset.aus === '1', ahora);
+    if (r.ok) { mutado(); aviso(b.dataset.aus === '1' ? 'Marcada como ausente. Sus solicitudes abiertas figuran ahora como «sin responsable activo»: ' + r.sinResponsable.length + '.' : 'Marcada como presente.', 'ok'); } else aviso(r.error, 'error');
+  }
+  else if (act === 'exportar') {
+    const r = Negocio.exportar(db(), u, ahora);
+    if (r.ok) { const n = ahora; descargar('aurora-solicitudes-' + ui.ambiente + '-' + n.getFullYear() + pad2(n.getMonth() + 1) + pad2(n.getDate()) + '-' + pad2(n.getHours()) + pad2(n.getMinutes()) + '.json', r.texto); ui.sucio = false; aviso('Respaldo exportado y registrado.', 'ok'); } else aviso(r.error, 'error');
+  }
+  render();
+});
+
+app.addEventListener('input', (e) => {
+  const f = e.target.dataset && e.target.dataset.f;
+  if (f) { ui.filtros[f] = e.target.value; actualizarTabla(); }
+});
+app.addEventListener('change', (e) => {
+  const f = e.target.dataset && e.target.dataset.f;
+  if (f) { ui.filtros[f] = e.target.value; actualizarTabla(); return; }
+  const fa = e.target.dataset && e.target.dataset.file;
+  if (fa && e.target.files[0]) manejarArchivo(fa, e.target.files[0]);
+});
+async function manejarArchivo(tipo, archivo) {
+  const texto = await archivo.text(), u = usuario(), ahora = new Date();
+  if (tipo === 'importar') {
+    const ok = await dialogo('Importar respaldo', 'Esto reemplaza los datos del ambiente actual por los del archivo. ¿Continuar?', [{ texto: 'Cancelar', valor: 'no' }, { texto: 'Importar', valor: 'si', clase: 'pel' }]);
+    if (ok !== 'si') return;
+    const r = Negocio.importarRespaldo(db(), u, texto, ahora);
+    if (r.ok) { ambientes[ui.ambiente] = r.db; mutado(); aviso('Respaldo importado: ' + r.db.solicitudes.length + ' solicitudes y ' + r.db.cambios.length + ' cambios.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'probar') {
+    const r = Negocio.probarRecuperacion(db(), u, texto, ahora);
+    if (r.ok) { mutado(); aviso((r.coincide ? 'La recuperación coincide. ' : 'Los conteos no coinciden. ') + r.detalle, r.coincide ? 'ok' : 'error'); } else aviso(r.error, 'error');
+  } else if (tipo === 'clientes') {
+    const r = Negocio.importarClientes(db(), u, texto, ahora);
+    if (r.ok) { mutado(); aviso('Clientes: ' + r.nuevos + ' nuevos, ' + r.actualizados + ' actualizados, ' + r.rechazados + ' rechazados.', 'ok'); } else aviso(r.error, 'error');
+  }
+  render();
+}
+
+app.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target, tipo = form.dataset.form, fd = new FormData(form), ahora = new Date(), u = usuario();
+  ui.aviso = null;
+  if (tipo === 'ingreso') {
+    ui.usuarioId = val(fd, 'uid'); ui.tab = 'bandeja'; ui.sel = null;
+    Negocio.registrarIngreso(db(), usuario(), ahora); mutado();
+  } else if (tipo === 'admin-inicial') {
+    const r = Negocio.crearAdminInicial(db(), { nombre: val(fd, 'nombre'), id: val(fd, 'id') }, ahora);
+    if (r.ok) { mutado(); ui.usuarioId = val(fd, 'id').trim().toLowerCase(); ui.tab = 'cuentas'; aviso('Cuenta creada. Ahora crea las demás cuentas e importa el directorio de clientes.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'registrar') {
+    const datos = Object.fromEntries(['clienteId', 'pedido', 'canal', 'fechaRecepcion', 'responsableId', 'asunto', 'contactoNombre', 'contactoMedio'].map((k) => [k, val(fd, k)]));
+    ui.borrador = datos;
+    let r = Negocio.registrarSolicitud(db(), u, datos, ahora);
+    if (!r.ok && r.duplicado) {
+      const dec = await dialogo('Posible duplicado', esc(r.error), [{ texto: 'Cancelar', valor: 'no' }, { texto: 'Abrir la existente', valor: 'abrir' }, { texto: 'Continuar y guardar', valor: 'seguir', clase: 'prim' }]);
+      if (dec === 'abrir') { ui.sel = r.duplicado.id; ui.tab = 'bandeja'; render(); return; }
+      if (dec === 'seguir') r = Negocio.registrarSolicitud(db(), u, datos, ahora, { ignorarDuplicado: true });
+      else { render(); return; }
+    }
+    if (r.ok) { mutado(); ui.borrador = null; ui.sel = r.solicitud.id; aviso('Solicitud registrada. Referencia para el cliente: ' + r.solicitud.ref, 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'editar') {
+    const r = Negocio.editarSolicitud(db(), u, ui.sel, { estado: val(fd, 'estado'), canal: val(fd, 'canal'), pedido: val(fd, 'pedido'), clienteId: val(fd, 'clienteId'), asunto: val(fd, 'asunto') }, ahora);
+    if (r.ok) { mutado(); aviso('Cambios guardados y registrados en la historia.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'reasignar') {
+    const r = Negocio.reasignar(db(), u, ui.sel, val(fd, 'nuevo'), val(fd, 'motivo'), ahora);
+    if (r.ok) { mutado(); aviso('Solicitud reasignada.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'anular') {
+    const r = Negocio.anular(db(), u, ui.sel, val(fd, 'motivo'), ahora);
+    if (r.ok) { mutado(); aviso('Solicitud anulada; conserva su historia.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'lote') {
+    const r = Negocio.reasignarLote(db(), u, fd.getAll('ids'), val(fd, 'nuevo'), val(fd, 'motivo'), ahora);
+    if (r.ok) { mutado(); aviso(r.reasignadas + ' solicitudes reasignadas, cada una con su propio registro.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'usuario') {
+    const r = Negocio.crearUsuario(db(), u, { nombre: val(fd, 'nombre'), id: val(fd, 'id'), rol: val(fd, 'rol') }, ahora);
+    if (r.ok) { mutado(); aviso('Cuenta creada.', 'ok'); } else aviso(r.error, 'error');
+  } else if (tipo === 'rol') {
+    const r = Negocio.cambiarRol(db(), u, val(fd, 'id'), val(fd, 'rol'), ahora);
+    if (r.ok) { mutado(); aviso('Rol actualizado y auditado.', 'ok'); } else aviso(r.error, 'error');
+  }
+  render();
+});
+
+window.Aurora = { Negocio, ambientes, ui, render, semillaCapacitacion };
+render();
+</script>
+</body>
+</html>

@@ -1,3 +1,13 @@
-node_modules/
+# Sistema operativo y editores
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Dependencias y registros
+node_modules/
 *.log
+# Respaldos exportados desde la aplicación (pueden contener datos reales)
+aurora-solicitudes-*.json
+# Temporales
+*.tmp
+__pycache__/

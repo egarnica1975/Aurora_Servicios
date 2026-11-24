@@ -1,0 +1,934 @@
+{
+ "version": 1,
+ "ambiente": "capacitacion",
+ "clientes": [
+  {
+   "id": "CLI-001",
+   "nombre": "Colegio Los Cedros"
+  },
+  {
+   "id": "CLI-002",
+   "nombre": "Colegio Nuevo Horizonte"
+  },
+  {
+   "id": "CLI-003",
+   "nombre": "Papelería La Esquina"
+  },
+  {
+   "id": "CLI-004",
+   "nombre": "Ferretería El Tornillo Feliz"
+  },
+  {
+   "id": "CLI-005",
+   "nombre": "Clínica Dental Sonrisas"
+  },
+  {
+   "id": "CLI-006",
+   "nombre": "Consultorio Jurídico Pérez y Asociados"
+  },
+  {
+   "id": "CLI-007",
+   "nombre": "Contadores Asociados del Valle"
+  },
+  {
+   "id": "CLI-008",
+   "nombre": "Restaurante El Fogón"
+  },
+  {
+   "id": "CLI-009",
+   "nombre": "Taller Mecánico Rápido"
+  },
+  {
+   "id": "CLI-010",
+   "nombre": "Colegio Rayuela"
+  },
+  {
+   "id": "CLI-011",
+   "nombre": "Inmobiliaria Casa Segura"
+  },
+  {
+   "id": "CLI-012",
+   "nombre": "Agencia de Viajes Brújula"
+  },
+  {
+   "id": "CLI-013",
+   "nombre": "Gimnasio Fuerza Viva"
+  },
+  {
+   "id": "CLI-014",
+   "nombre": "Droguería Salud Total"
+  },
+  {
+   "id": "CLI-015",
+   "nombre": "Constructora Cimiento"
+  }
+ ],
+ "colaboradores": [
+  {
+   "id": "ana.ruiz",
+   "nombre": "Ana Ruiz",
+   "rol": "agente",
+   "ausente": false
+  },
+  {
+   "id": "luis.mora",
+   "nombre": "Luis Mora",
+   "rol": "agente",
+   "ausente": false
+  },
+  {
+   "id": "camila.pardo",
+   "nombre": "Camila Pardo",
+   "rol": "agente",
+   "ausente": false
+  },
+  {
+   "id": "diego.salas",
+   "nombre": "Diego Salas",
+   "rol": "agente",
+   "ausente": false
+  },
+  {
+   "id": "marta.velez",
+   "nombre": "Marta Vélez",
+   "rol": "coordinador",
+   "ausente": false
+  },
+  {
+   "id": "julian.ortiz",
+   "nombre": "Julián Ortiz (Ventas)",
+   "rol": "consulta",
+   "ausente": false
+  },
+  {
+   "id": "soporte",
+   "nombre": "Soporte Técnico (proveedor)",
+   "rol": "administrador técnico",
+   "ausente": false
+  }
+ ],
+ "solicitudes": [
+  {
+   "id": "SOL-2026-00001",
+   "ref": "SOL-2026-00001",
+   "clienteId": "CLI-001",
+   "contacto": {
+    "nombre": "Contacto Colegio",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1001",
+   "asunto": "Entrega incompleta de resmas tamaño carta",
+   "canal": "teléfono",
+   "estado": "En gestión",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-02T13:15:00.000Z",
+   "fechaRegistro": "2026-11-02T13:21:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00002",
+   "ref": "SOL-2026-00002",
+   "clienteId": "CLI-003",
+   "contacto": {
+    "nombre": "Contacto Papelería",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "PED1002",
+   "asunto": "Factura con valor distinto al cotizado",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "luis.mora",
+   "fechaRecepcion": "2026-11-02T14:40:00.000Z",
+   "fechaRegistro": "2026-11-02T14:46:00.000Z",
+   "registradaPor": "luis.mora",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00003",
+   "ref": "SOL-2026-00003",
+   "clienteId": "CLI-005",
+   "contacto": {
+    "nombre": "Contacto Clínica",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1007",
+   "asunto": "Cambio de producto por referencia errada",
+   "canal": "mensajería",
+   "estado": "En gestión",
+   "responsableId": "camila.pardo",
+   "fechaRecepcion": "2026-11-03T15:05:00.000Z",
+   "fechaRegistro": "2026-11-03T15:11:00.000Z",
+   "registradaPor": "camila.pardo",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00004",
+   "ref": "SOL-2026-00004",
+   "clienteId": "CLI-002",
+   "contacto": {
+    "nombre": "Contacto Colegio",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1010",
+   "asunto": "Consulta por fecha de entrega de cuadernos",
+   "canal": "teléfono",
+   "estado": "Abierta",
+   "responsableId": "diego.salas",
+   "fechaRecepcion": "2026-11-03T16:30:00.000Z",
+   "fechaRegistro": "2026-11-03T16:36:00.000Z",
+   "registradaPor": "diego.salas",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00005",
+   "ref": "SOL-2026-00005",
+   "clienteId": "CLI-008",
+   "contacto": {
+    "nombre": "Contacto Restaurante",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "",
+   "asunto": "Solicitud de cotización de tóner",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-04T13:50:00.000Z",
+   "fechaRegistro": "2026-11-04T13:56:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00006",
+   "ref": "SOL-2026-00006",
+   "clienteId": "CLI-004",
+   "contacto": {
+    "nombre": "Contacto Ferretería",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1015",
+   "asunto": "Caja de bolígrafos llegó dañada",
+   "canal": "mensajería",
+   "estado": "Abierta",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-04T19:10:00.000Z",
+   "fechaRegistro": "2026-11-04T19:16:00.000Z",
+   "registradaPor": "luis.mora",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00007",
+   "ref": "SOL-2026-00007",
+   "clienteId": "CLI-006",
+   "contacto": {
+    "nombre": "Contacto Consultorio",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "",
+   "asunto": "Aclarar frecuencia del pedido periódico mensual",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "camila.pardo",
+   "fechaRecepcion": "2026-11-05T14:00:00.000Z",
+   "fechaRegistro": "2026-11-05T14:06:00.000Z",
+   "registradaPor": "camila.pardo",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00008",
+   "ref": "SOL-2026-00008",
+   "clienteId": "CLI-009",
+   "contacto": {
+    "nombre": "Contacto Taller",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1021",
+   "asunto": "Entrega fuera del horario acordado",
+   "canal": "teléfono",
+   "estado": "En gestión",
+   "responsableId": "diego.salas",
+   "fechaRecepcion": "2026-11-05T20:20:00.000Z",
+   "fechaRegistro": "2026-11-05T20:26:00.000Z",
+   "registradaPor": "diego.salas",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00009",
+   "ref": "SOL-2026-00009",
+   "clienteId": "CLI-010",
+   "contacto": {
+    "nombre": "Contacto Colegio",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1025",
+   "asunto": "Faltan tres cajas de marcadores",
+   "canal": "mensajería",
+   "estado": "Abierta",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-06T13:30:00.000Z",
+   "fechaRegistro": "2026-11-06T13:36:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00010",
+   "ref": "SOL-2026-00010",
+   "clienteId": "CLI-007",
+   "contacto": {
+    "nombre": "Contacto Contadores",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "PED1026",
+   "asunto": "Corrección de dirección de entrega",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "luis.mora",
+   "fechaRecepcion": "2026-11-06T15:45:00.000Z",
+   "fechaRegistro": "2026-11-06T15:51:00.000Z",
+   "registradaPor": "luis.mora",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00011",
+   "ref": "SOL-2026-00011",
+   "clienteId": "CLI-011",
+   "contacto": {
+    "nombre": "Contacto Inmobiliaria",
+    "medio": "300 000 0000"
+   },
+   "pedido": "",
+   "asunto": "Consulta por precio de papel carta",
+   "canal": "teléfono",
+   "estado": "Abierta",
+   "responsableId": "camila.pardo",
+   "fechaRecepcion": "2026-11-09T14:15:00.000Z",
+   "fechaRegistro": "2026-11-09T14:21:00.000Z",
+   "registradaPor": "camila.pardo",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00012",
+   "ref": "SOL-2026-00012",
+   "clienteId": "CLI-001",
+   "contacto": {
+    "nombre": "Contacto Colegio",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1048",
+   "asunto": "Reclamo por segunda entrega incompleta",
+   "canal": "mensajería",
+   "estado": "En gestión",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-09T16:00:00.000Z",
+   "fechaRegistro": "2026-11-09T16:06:00.000Z",
+   "registradaPor": "diego.salas",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00013",
+   "ref": "SOL-2026-00013",
+   "clienteId": "CLI-012",
+   "contacto": {
+    "nombre": "Contacto Agencia",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "",
+   "asunto": "Cambio de contacto para facturación",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-10T13:20:00.000Z",
+   "fechaRegistro": "2026-11-10T13:26:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00014",
+   "ref": "SOL-2026-00014",
+   "clienteId": "CLI-013",
+   "contacto": {
+    "nombre": "Contacto Gimnasio",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1033",
+   "asunto": "Producto distinto al pedido",
+   "canal": "teléfono",
+   "estado": "Abierta",
+   "responsableId": "luis.mora",
+   "fechaRecepcion": "2026-11-10T18:35:00.000Z",
+   "fechaRegistro": "2026-11-10T18:41:00.000Z",
+   "registradaPor": "luis.mora",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00015",
+   "ref": "SOL-2026-00015",
+   "clienteId": "CLI-014",
+   "contacto": {
+    "nombre": "Contacto Droguería",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "PED1036",
+   "asunto": "Solicitud de nota crédito",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "camila.pardo",
+   "fechaRecepcion": "2026-11-11T14:50:00.000Z",
+   "fechaRegistro": "2026-11-11T14:56:00.000Z",
+   "registradaPor": "camila.pardo",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00016",
+   "ref": "SOL-2026-00016",
+   "clienteId": "CLI-015",
+   "contacto": {
+    "nombre": "Contacto Constructora",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1040",
+   "asunto": "Consulta por estado del pedido",
+   "canal": "mensajería",
+   "estado": "Abierta",
+   "responsableId": "diego.salas",
+   "fechaRecepcion": "2026-11-11T21:05:00.000Z",
+   "fechaRegistro": "2026-11-11T21:11:00.000Z",
+   "registradaPor": "diego.salas",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00017",
+   "ref": "SOL-2026-00017",
+   "clienteId": "CLI-003",
+   "contacto": {
+    "nombre": "Contacto Papelería",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1042",
+   "asunto": "Pedido repetido por error del cliente",
+   "canal": "teléfono",
+   "estado": "Abierta",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-12T13:40:00.000Z",
+   "fechaRegistro": "2026-11-12T13:46:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": true,
+   "motivoAnulacion": "Registrada por duplicidad; el cliente repitió la solicitud"
+  },
+  {
+   "id": "SOL-2026-00018",
+   "ref": "SOL-2026-00018",
+   "clienteId": "CLI-002",
+   "contacto": {
+    "nombre": "Contacto Colegio",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "PED1044",
+   "asunto": "Retraso en entrega de formatos",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "luis.mora",
+   "fechaRecepcion": "2026-11-12T15:25:00.000Z",
+   "fechaRegistro": "2026-11-12T15:31:00.000Z",
+   "registradaPor": "luis.mora",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00019",
+   "ref": "SOL-2026-00019",
+   "clienteId": "CLI-005",
+   "contacto": {
+    "nombre": "Contacto Clínica",
+    "medio": "300 000 0000"
+   },
+   "pedido": "",
+   "asunto": "Aclaración sobre garantía de sillas",
+   "canal": "mensajería",
+   "estado": "Abierta",
+   "responsableId": "camila.pardo",
+   "fechaRecepcion": "2026-11-13T14:10:00.000Z",
+   "fechaRegistro": "2026-11-13T14:16:00.000Z",
+   "registradaPor": "camila.pardo",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00020",
+   "ref": "SOL-2026-00020",
+   "clienteId": "CLI-001",
+   "contacto": {
+    "nombre": "Contacto Colegio",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1048",
+   "asunto": "Faltante en la entrega del pedido PED1048",
+   "canal": "teléfono",
+   "estado": "Abierta",
+   "responsableId": "diego.salas",
+   "fechaRecepcion": "2026-11-13T19:45:00.000Z",
+   "fechaRegistro": "2026-11-13T19:51:00.000Z",
+   "registradaPor": "diego.salas",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00021",
+   "ref": "SOL-2026-00021",
+   "clienteId": "CLI-008",
+   "contacto": {
+    "nombre": "Contacto Restaurante",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "PED1050",
+   "asunto": "Cambio de presentación de servilletas",
+   "canal": "correo",
+   "estado": "En gestión",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-16T13:55:00.000Z",
+   "fechaRegistro": "2026-11-16T14:01:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00022",
+   "ref": "SOL-2026-00022",
+   "clienteId": "CLI-004",
+   "contacto": {
+    "nombre": "Contacto Ferretería",
+    "medio": "300 000 0000"
+   },
+   "pedido": "PED1052",
+   "asunto": "Entrega en sede equivocada",
+   "canal": "mensajería",
+   "estado": "Abierta",
+   "responsableId": "luis.mora",
+   "fechaRecepcion": "2026-11-16T16:15:00.000Z",
+   "fechaRegistro": "2026-11-16T16:21:00.000Z",
+   "registradaPor": "luis.mora",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00023",
+   "ref": "SOL-2026-00023",
+   "clienteId": "CLI-009",
+   "contacto": {
+    "nombre": "Contacto Taller",
+    "medio": "300 000 0000"
+   },
+   "pedido": "",
+   "asunto": "Consulta por descuento por volumen",
+   "canal": "teléfono",
+   "estado": "Abierta",
+   "responsableId": "camila.pardo",
+   "fechaRecepcion": "2026-11-17T14:30:00.000Z",
+   "fechaRegistro": "2026-11-17T14:36:00.000Z",
+   "registradaPor": "camila.pardo",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00024",
+   "ref": "SOL-2026-00024",
+   "clienteId": "CLI-006",
+   "contacto": {
+    "nombre": "Contacto Consultorio",
+    "medio": "compras@ejemplo.test"
+   },
+   "pedido": "PED1055",
+   "asunto": "Factura duplicada",
+   "canal": "correo",
+   "estado": "Abierta",
+   "responsableId": "diego.salas",
+   "fechaRecepcion": "2026-11-17T20:00:00.000Z",
+   "fechaRegistro": "2026-11-17T20:06:00.000Z",
+   "registradaPor": "diego.salas",
+   "anulada": false,
+   "motivoAnulacion": ""
+  },
+  {
+   "id": "SOL-2026-00025",
+   "ref": "SOL-2026-00025",
+   "clienteId": "CLI-007",
+   "contacto": {
+    "nombre": "Contacto Contadores",
+    "medio": "300 000 0000"
+   },
+   "pedido": "",
+   "asunto": "Solicitud de visita del asesor comercial",
+   "canal": "mensajería",
+   "estado": "Abierta",
+   "responsableId": "ana.ruiz",
+   "fechaRecepcion": "2026-11-18T15:10:00.000Z",
+   "fechaRegistro": "2026-11-18T15:16:00.000Z",
+   "registradaPor": "ana.ruiz",
+   "anulada": false,
+   "motivoAnulacion": ""
+  }
+ ],
+ "cambios": [
+  {
+   "id": "C1",
+   "solicitudId": "SOL-2026-00001",
+   "fecha": "2026-11-02T13:21:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C2",
+   "solicitudId": "SOL-2026-00002",
+   "fecha": "2026-11-02T14:46:00.000Z",
+   "usuarioId": "luis.mora",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C3",
+   "solicitudId": "SOL-2026-00003",
+   "fecha": "2026-11-03T15:11:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C4",
+   "solicitudId": "SOL-2026-00004",
+   "fecha": "2026-11-03T16:36:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C5",
+   "solicitudId": "SOL-2026-00005",
+   "fecha": "2026-11-04T13:56:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C6",
+   "solicitudId": "SOL-2026-00006",
+   "fecha": "2026-11-04T19:16:00.000Z",
+   "usuarioId": "luis.mora",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C7",
+   "solicitudId": "SOL-2026-00007",
+   "fecha": "2026-11-05T14:06:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C8",
+   "solicitudId": "SOL-2026-00008",
+   "fecha": "2026-11-05T20:26:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C9",
+   "solicitudId": "SOL-2026-00009",
+   "fecha": "2026-11-06T13:36:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C10",
+   "solicitudId": "SOL-2026-00010",
+   "fecha": "2026-11-06T15:51:00.000Z",
+   "usuarioId": "luis.mora",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C11",
+   "solicitudId": "SOL-2026-00011",
+   "fecha": "2026-11-09T14:21:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C12",
+   "solicitudId": "SOL-2026-00012",
+   "fecha": "2026-11-09T16:06:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C13",
+   "solicitudId": "SOL-2026-00013",
+   "fecha": "2026-11-10T13:26:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C14",
+   "solicitudId": "SOL-2026-00014",
+   "fecha": "2026-11-10T18:41:00.000Z",
+   "usuarioId": "luis.mora",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C15",
+   "solicitudId": "SOL-2026-00015",
+   "fecha": "2026-11-11T14:56:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C16",
+   "solicitudId": "SOL-2026-00016",
+   "fecha": "2026-11-11T21:11:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C17",
+   "solicitudId": "SOL-2026-00017",
+   "fecha": "2026-11-12T13:46:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C18",
+   "solicitudId": "SOL-2026-00018",
+   "fecha": "2026-11-12T15:31:00.000Z",
+   "usuarioId": "luis.mora",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C19",
+   "solicitudId": "SOL-2026-00019",
+   "fecha": "2026-11-13T14:16:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C20",
+   "solicitudId": "SOL-2026-00020",
+   "fecha": "2026-11-13T19:51:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C21",
+   "solicitudId": "SOL-2026-00021",
+   "fecha": "2026-11-16T14:01:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C22",
+   "solicitudId": "SOL-2026-00022",
+   "fecha": "2026-11-16T16:21:00.000Z",
+   "usuarioId": "luis.mora",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C23",
+   "solicitudId": "SOL-2026-00023",
+   "fecha": "2026-11-17T14:36:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C24",
+   "solicitudId": "SOL-2026-00024",
+   "fecha": "2026-11-17T20:06:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C25",
+   "solicitudId": "SOL-2026-00025",
+   "fecha": "2026-11-18T15:16:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "registro",
+   "anterior": "",
+   "nuevo": "Solicitud registrada con estado Abierta",
+   "motivo": ""
+  },
+  {
+   "id": "C26",
+   "solicitudId": "SOL-2026-00001",
+   "fecha": "2026-11-02T16:00:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "estado",
+   "anterior": "Abierta",
+   "nuevo": "En gestión",
+   "motivo": ""
+  },
+  {
+   "id": "C27",
+   "solicitudId": "SOL-2026-00003",
+   "fecha": "2026-11-04T14:30:00.000Z",
+   "usuarioId": "camila.pardo",
+   "campo": "estado",
+   "anterior": "Abierta",
+   "nuevo": "En gestión",
+   "motivo": ""
+  },
+  {
+   "id": "C28",
+   "solicitudId": "SOL-2026-00008",
+   "fecha": "2026-11-06T14:00:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "estado",
+   "anterior": "Abierta",
+   "nuevo": "En gestión",
+   "motivo": ""
+  },
+  {
+   "id": "C29",
+   "solicitudId": "SOL-2026-00012",
+   "fecha": "2026-11-09T18:00:00.000Z",
+   "usuarioId": "diego.salas",
+   "campo": "estado",
+   "anterior": "Abierta",
+   "nuevo": "En gestión",
+   "motivo": ""
+  },
+  {
+   "id": "C30",
+   "solicitudId": "SOL-2026-00021",
+   "fecha": "2026-11-16T19:00:00.000Z",
+   "usuarioId": "ana.ruiz",
+   "campo": "estado",
+   "anterior": "Abierta",
+   "nuevo": "En gestión",
+   "motivo": ""
+  },
+  {
+   "id": "C31",
+   "solicitudId": "SOL-2026-00006",
+   "fecha": "2026-11-05T15:00:00.000Z",
+   "usuarioId": "marta.velez",
+   "campo": "responsable",
+   "anterior": "Luis Mora",
+   "nuevo": "Ana Ruiz",
+   "motivo": "Balance de carga entre agentes"
+  },
+  {
+   "id": "C32",
+   "solicitudId": "SOL-2026-00012",
+   "fecha": "2026-11-10T14:00:00.000Z",
+   "usuarioId": "marta.velez",
+   "campo": "responsable",
+   "anterior": "Diego Salas",
+   "nuevo": "Camila Pardo",
+   "motivo": "Se asigna a quien atendió un caso previo del cliente"
+  },
+  {
+   "id": "C33",
+   "solicitudId": "SOL-2026-00012",
+   "fecha": "2026-11-12T14:30:00.000Z",
+   "usuarioId": "marta.velez",
+   "campo": "responsable",
+   "anterior": "Camila Pardo",
+   "nuevo": "Ana Ruiz",
+   "motivo": "Camila queda con la cartera de clínicas"
+  },
+  {
+   "id": "C34",
+   "solicitudId": "SOL-2026-00017",
+   "fecha": "2026-11-12T16:00:00.000Z",
+   "usuarioId": "marta.velez",
+   "campo": "anulada",
+   "anterior": "No",
+   "nuevo": "Sí",
+   "motivo": "Registrada por duplicidad; el cliente repitió la solicitud"
+  }
+ ],
+ "auditoria": [],
+ "respaldos": [],
+ "contadores": {
+  "2026": 25
+ }
+}

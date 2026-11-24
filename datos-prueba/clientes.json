@@ -1,0 +1,62 @@
+[
+ {
+  "id": "CLI-001",
+  "nombre": "Colegio Los Cedros"
+ },
+ {
+  "id": "CLI-002",
+  "nombre": "Colegio Nuevo Horizonte"
+ },
+ {
+  "id": "CLI-003",
+  "nombre": "Papelería La Esquina"
+ },
+ {
+  "id": "CLI-004",
+  "nombre": "Ferretería El Tornillo Feliz"
+ },
+ {
+  "id": "CLI-005",
+  "nombre": "Clínica Dental Sonrisas"
+ },
+ {
+  "id": "CLI-006",
+  "nombre": "Consultorio Jurídico Pérez y Asociados"
+ },
+ {
+  "id": "CLI-007",
+  "nombre": "Contadores Asociados del Valle"
+ },
+ {
+  "id": "CLI-008",
+  "nombre": "Restaurante El Fogón"
+ },
+ {
+  "id": "CLI-009",
+  "nombre": "Taller Mecánico Rápido"
+ },
+ {
+  "id": "CLI-010",
+  "nombre": "Colegio Rayuela"
+ },
+ {
+  "id": "CLI-011",
+  "nombre": "Inmobiliaria Casa Segura"
+ },
+ {
+  "id": "CLI-012",
+  "nombre": "Agencia de Viajes Brújula"
+ },
+ {
+  "id": "CLI-013",
+  "nombre": "Gimnasio Fuerza Viva"
+ },
+ {
+  "id": "CLI-014",
+  "nombre": "Droguería Salud Total"
+ },
+ {
+  "id": "CLI-015",
+  "nombre": "Constructora Cimiento"
+ }
+]
