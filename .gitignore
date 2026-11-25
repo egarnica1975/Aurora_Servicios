@@ -16,3 +16,4 @@ __pycache__/
 *.dump
 *.sql.gz
 volcados/
+*.conteos
