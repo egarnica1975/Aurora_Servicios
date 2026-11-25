@@ -49,7 +49,7 @@ La tabla completa está en `openspec/changes/h1-registro-confiable/design.md` (D
 - **Un solo archivo de datos:** la unicidad de la referencia vale dentro de ese archivo; no hay uso simultáneo de varias personas.
 - **Pendiente de definir** (`[por definir]`): frecuencia de respaldo y tiempo de recuperación, fecha real de recepción cuando se registra después del contacto, y plazo de retención.
 
-La versión 2 (Supabase/PostgreSQL, Python y FastAPI) cierra estos límites. Está especificada en siete cambios `v2-*` de `openspec/changes/`; el plan de decisiones y ejecución está en [`docs/plan-v2.md`](docs/plan-v2.md).
+La versión 2 (Supabase/PostgreSQL, Python y FastAPI) cierra estos límites. Está especificada en seis cambios `v2-*` (más uno aplazado) de `openspec/changes/`; el plan de decisiones y ejecución está en [`docs/plan-v2.md`](docs/plan-v2.md).
 
 ## Desarrollo con OpenSpec y Claude Code
 

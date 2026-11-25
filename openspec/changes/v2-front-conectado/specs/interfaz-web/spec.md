@@ -46,15 +46,6 @@ _Trazabilidad: L01 · H1 «solicitudes», «respaldo» · OP-12 · E04, E08._
 - **WHEN** una persona registra una solicitud, cierra el navegador y vuelve a ingresar
 - **THEN** la solicitud sigue en la bandeja
 
-### Requirement: Indicador de ambiente
-La interfaz SHALL mostrar de forma visible si se está en el ambiente de capacitación o en el de trabajo.
-
-_Trazabilidad: L11 · H1 «ambientes» · OP-12 · E04, E08._
-
-#### Scenario: Ambiente de capacitación
-- **WHEN** se ingresa al ambiente de capacitación
-- **THEN** un aviso visible en todas las pantallas indica que son datos de práctica
-
 ### Requirement: Errores de conexión sin pérdida del borrador
 La interfaz SHALL conservar lo digitado cuando una petición falle por problemas de red y SHALL informar la causa con un mensaje claro.
 

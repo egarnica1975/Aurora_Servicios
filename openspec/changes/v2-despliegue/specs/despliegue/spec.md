@@ -2,15 +2,6 @@
 
 ## ADDED Requirements
 
-### Requirement: Ambientes separados con configuración propia
-El sistema SHALL ejecutarse en un ambiente de capacitación y uno de trabajo con bases de datos, credenciales y configuración distintas, de modo que una acción en uno no afecte al otro.
-
-_Trazabilidad: L11 · H1 «ambientes» · OP-12 · E04, E08._
-
-#### Scenario: Acción en capacitación
-- **WHEN** se registra una solicitud en capacitación
-- **THEN** no aparece en el ambiente de trabajo
-
 ### Requirement: Secretos fuera del repositorio
 El sistema SHALL mantener credenciales, claves y cadenas de conexión fuera del repositorio y SHALL detectar su presencia accidental antes de desplegar.
 

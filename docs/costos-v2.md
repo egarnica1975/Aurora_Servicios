@@ -4,8 +4,10 @@ Consulta: 25-nov-2026. Precios en USD de las páginas oficiales; conversión con
 
 Estado: **referencia, no presupuesto.** Faltan: dominio, correo de avisos, horas del proveedor (no hay datos en el caso) y uso real.
 
+**Decisión del 25-nov-2026:** proyecto académico no comercial; se usan Supabase Free y Vercel Hobby (USD 0/mes). Lo que sigue es la referencia si el proyecto pasara a ser comercial.
+
 ## Supuestos de esta tabla
-- Un solo proyecto de Supabase (ambiente de trabajo); sin ambiente de capacitación (decisión del 25-nov).
+- Un solo proyecto de Supabase (ambiente de trabajo); la capacitación sigue en la V1.
 - API en Python/FastAPI y front estático en Vercel.
 - Consumo dentro de lo incluido; no se estimó uso real.
 
@@ -27,17 +29,14 @@ Estado: **referencia, no presupuesto.** Faltan: dominio, correo de avisos, horas
 | E2. Supabase Pro + Vercel Hobby | 25 | 82.700 | Dentro, pero Hobby no es comercial |
 | E3. E1 + PITR de 7 días (USD 100/mes por proyecto) | 145 | 479.900 | **Excede** |
 
-## Respaldo: alternativas y su costo
+## Respaldo (decisión: solo volcado manual)
 
-| Opción | Costo adicional | Pérdida máxima de datos | Observaciones |
+| Opción | Costo adicional | Pérdida máxima de datos | Estado |
 |---|---|---|---|
-| A. Respaldo diario nativo (Pro, 7 días) | Incluido en USD 25 | Hasta 24 h | La documentación indica que no se pueden descargar. |
-| B. A + respaldo manual bajo demanda (`supabase db dump` o `pg_dump`) antes de cambios riesgosos | USD 0 | Hasta el momento del manual | Lo ejecuta el administrador técnico; depende de que se acuerde. |
-| C. A + copia lógica programada con GitHub Actions a un almacenamiento propio, con registro y aviso de fallo | USD 0 a muy bajo | Hasta 24 h, fuera del proveedor | Da registro de resultado y aviso, que el respaldo nativo no ofrece por sí solo. |
-| D. PITR 7 días | USD 100 | Minutos | Supera el límite del caso. |
-| E. Solo plan Free + opción C | USD 0 | Hasta 24 h | Pausa por inactividad y sin respaldos nativos: riesgo alto. |
-
-La salida de datos de los respaldos cuenta como tráfico saliente; el plan Pro incluye 250 GB al mes.
+| Volcado manual de la base (`pg_dump` o `supabase db dump`) | USD 0 | Todo lo posterior al último volcado | **Elegida** |
+| Respaldo diario nativo (Supabase Pro, 7 días) | Incluido en USD 25 | Hasta 24 h | Descartada: no comercial |
+| Copia lógica programada con GitHub Actions | USD 0 a muy bajo | Hasta 24 h | Descartada por decisión del usuario (sin respaldo programado) |
+| PITR 7 días | USD 100 | Minutos | Descartada |
 
 ## Pendiente
-Cuando se fijen decisiones, completar dominio, correo y horas del proveedor, y recalcular con la TRM del día.
+Si el proyecto se hiciera comercial, completar dominio, correo y horas del proveedor, y recalcular con la TRM del día.

@@ -4,8 +4,8 @@ Aurora no tiene equipo de desarrollo; un proveedor externo administra accesos y 
 
 ## Objetivos / No objetivos
 
-- **Objetivos:** que los datos sobrevivan entre sesiones; que el motor imponga las restricciones de integridad; que el esquema sea reproducible desde cero con migraciones; que capacitación y trabajo estén separados.
-- **No objetivos:** historia inmutable y referencia transaccional (`v2-integridad-historial`), respaldo (`v2-respaldo-recuperacion`), carga de datos de la V1 (`v2-migracion-v1`), API y autenticación (`v2-api-backend`).
+- **Objetivos:** que los datos sobrevivan entre sesiones; que el motor imponga las restricciones de integridad; que el esquema sea reproducible desde cero con migraciones; que los datos ficticios no lleguen al ambiente de trabajo.
+- **No objetivos:** historia inmutable y referencia transaccional (`v2-integridad-historial`), respaldo (`v2-respaldo-recuperacion`), API y autenticación (`v2-api-backend`).
 
 ## Decisiones
 
@@ -73,9 +73,9 @@ create table respaldo_registro (
 
 Los catálogos se cargan con «mensajería, correo, teléfono» y «Abierta, En gestión». La V2 usa los mismos nombres que la V1 para que la migración no traduzca valores.
 
-### D4. Ambientes: dos bases separadas (propuesta abierta)
+### D4. Un solo ambiente (decisión del usuario, 25-nov-2026)
 
-Capacitación y trabajo en bases distintas, con credenciales distintas, garantizan que ninguna acción de práctica llegue a los datos de trabajo. Si el costo de dos proyectos no cabe, la alternativa es un solo proyecto con esquemas separados, que es una separación más débil.
+Proyecto académico no comercial: un único proyecto de Supabase como ambiente de trabajo. La capacitación se queda en la V1 y no continúa en la V2. Consecuencia declarada: el límite L11 (ambientes separados) no se cierra en la V2. Los datos ficticios se cargan solo en bases locales o de prueba, y el procedimiento se niega sobre la base de trabajo.
 
 ### D5. Contacto dentro de la solicitud
 
@@ -83,7 +83,7 @@ Se conserva el modelo de la V1 (nombre y un medio en la solicitud, ambos o ningu
 
 ## Riesgos y compensaciones
 
-- **Costo de dos proyectos:** no está calculado; se resuelve en `docs/plan-v2.md` antes de crear el ambiente de trabajo.
+- **Un solo ambiente:** una prueba hecha por error en el ambiente de trabajo afecta datos reales; se mitiga con el rol de aplicación y con la regla de que los datos ficticios no se cargan allí.
 - **Dependencia del proveedor de nube:** el esquema es SQL estándar de PostgreSQL, lo que permite mover la base a otro servicio de PostgreSQL con un `pg_dump`.
 - **Migraciones aplicadas a mano:** se prohíben por requisito; el proceso de integración continua verifica que el esquema se reconstruya desde cero.
 

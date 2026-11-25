@@ -1,39 +1,35 @@
 ## Contexto
 
-Aurora no tiene equipo de desarrollo y un proveedor externo administra respaldos (E07). Datos verificados el 25-nov-2026 en la documentación de Supabase:
-
-- Los respaldos diarios automáticos se hacen en los planes Pro, Team y Enterprise; Pro conserva 7 días. Con solo respaldos diarios se pueden perder hasta 24 horas de datos.
-- La recuperación al punto en el tiempo (PITR) es un complemento de pago que reduce la pérdida a minutos (peor caso de dos minutos según la documentación) y reemplaza a los respaldos diarios.
-- Las fuentes están en `docs/plan-v2.md`. Los precios no se citan aquí: deben consultarse vigentes.
+Decisión del 25-nov-2026: proyecto académico, solución más económica y sin respaldos programados. Datos verificados el 25-nov-2026: según la documentación de Supabase, los respaldos automáticos diarios son de los planes de pago y para proyectos gratuitos recomienda exportar los datos con `supabase db dump` y conservar copias fuera del proveedor. Fuentes en `docs/plan-v2.md`.
 
 ## Objetivos / No objetivos
 
-- **Objetivos:** respaldo programado con resultado registrado, aviso de fallo, restauración comprobada y procedimiento.
-- **No objetivos:** alta disponibilidad, réplicas ni recuperación ante desastre entre regiones.
+- **Objetivos:** poder sacar una copia completa de la base, comprobar que se restaura y dejar el procedimiento escrito.
+- **No objetivos:** respaldo programado, aviso de fallo, recuperación al punto en el tiempo, alta disponibilidad.
 
 ## Decisiones
 
-### D1. Respaldo nativo del proveedor como base (supuesto de diseño)
+### D1. Volcado lógico con `pg_dump` o `supabase db dump` (supuesto)
 
-El ambiente de trabajo corre en un plan de Supabase con respaldos automáticos. PITR se evalúa solo si el caso fija un punto de recuperación menor a 24 horas (`[por definir]`).
+El administrador técnico ejecuta el volcado desde su equipo con la cadena de conexión de la base. Se usa formato personalizado de `pg_dump` para poder restaurar con `pg_restore`. Nota de la documentación: `supabase db dump` entrega solo el esquema si no se indica `--data-only`; el procedimiento debe cubrir esquema y datos.
 
-### D2. Copia lógica complementaria programada (propuesta abierta)
+### D2. Registro del resultado
 
-Un trabajo programado en GitHub Actions ejecuta `pg_dump` cada día y guarda el archivo cifrado fuera de Supabase. Aporta tres cosas que el respaldo nativo no da por sí solo: un registro de resultado propio en `respaldo_registro`, un aviso de fallo (la falla del trabajo notifica por correo al administrador técnico) y una copia que no depende del proveedor de base de datos. Si el costo o la complejidad no se justifican, se descarta y el registro y el aviso se resuelven de otra forma.
+Tras cada volcado o prueba, el administrador técnico registra el resultado (fecha, tipo, éxito o fallo, conteos) en `respaldo_registro` a través de una operación de la API. La tabla es de solo inserción para el rol de la aplicación. El registro es manual: la V2 no puede detectar un volcado que nadie ejecutó.
 
-### D3. Prueba de restauración en un proyecto distinto
+### D3. Restauración en una base distinta
 
-Se restaura el último respaldo en un proyecto de prueba y se comparan los conteos de solicitudes y de cambios, y el tiempo de recuperación. La prueba debe estar registrada antes del piloto (E08). El tiempo no tiene meta en el caso: `[por definir]`.
+La prueba restaura el volcado en una base local o en un proyecto gratuito temporal (el plan gratuito permite hasta dos proyectos activos), y compara los conteos de solicitudes y de cambios. El tiempo de recuperación no tiene meta en el caso: `[por definir]`.
 
-### D4. Registro de resultados
+### D4. Protección del archivo
 
-Cada respaldo y cada prueba insertan una fila en `respaldo_registro` (tipo, resultado, detalle, usuario). La tabla es de solo inserción para el rol de la aplicación.
+El volcado no se sube al repositorio; se guarda en un lugar con acceso restringido definido por Aurora `[por definir]`.
 
 ## Riesgos y compensaciones
 
-- **Plan sin respaldos:** si el ambiente de trabajo se crea en el plan gratuito no habrá respaldos nativos; el cambio lo detecta y lo bloquea (tarea 1.2).
-- **Respaldo no restaurable:** se mitiga con la prueba de restauración periódica, no solo con el respaldo.
-- **Dependencia del proveedor (E07):** el procedimiento debe poder ejecutarlo quien tenga el rol de administrador técnico, siguiendo pasos escritos.
+- **Pérdida de datos entre volcados:** sin respaldo programado, todo lo registrado después del último volcado puede perderse. Se acepta por ser un proyecto académico y se declara como límite L08 abierto.
+- **Olvido del volcado:** no hay aviso; la periodicidad queda como compromiso manual.
+- **Pausa por inactividad del plan gratuito:** puede dejar la base sin servicio; se mitiga reactivándola y con el volcado reciente.
 
 ## Preguntas abiertas
 

@@ -9,7 +9,7 @@ Este cambio conecta la interfaz existente a la API manteniendo la funcionalidad 
 - Interfaz web que usa la API en lugar de datos en memoria (nuevo).
 - Ingreso con cuenta y sesión (reemplaza el selector de usuario) (nuevo).
 - Persistencia visible: la persona ve que sus datos quedaron guardados (nuevo).
-- Indicador de ambiente y conservación del borrador ante errores de red (nuevo).
+- Conservación del borrador ante errores de red (nuevo).
 - Importación de clientes desde la interfaz hacia la API (nuevo).
 
 ## Capabilities
@@ -23,7 +23,7 @@ Ninguna.
 ## Impact
 
 - Depende de `v2-api-backend`.
-- La V1 (`app/index.html`) se conserva como referencia y como material de capacitación sin servidor.
+- La V1 (`app/index.html`) se conserva como referencia y como ambiente de capacitación: la capacitación no continúa en la V2 (decisión del 25-nov-2026).
 - El código del front se separa en archivos (`web/`) para poder probarse y desplegarse.
 
 ## Preguntas abiertas

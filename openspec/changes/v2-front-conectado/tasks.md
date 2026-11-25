@@ -7,8 +7,5 @@
 - [ ] 2.1 Registro, bandeja, detalle e historia sobre la API.
 - [ ] 2.2 Cambio de estado, reasignación y anulación con mensajes del servidor.
 - [ ] 2.3 Panel del coordinador y administración de clientes e importación.
-- [ ] 2.4 Indicador de ambiente y conservación del borrador.
+- [ ] 2.4 Conservación del borrador ante errores de red.
 - [ ] 2.5 Verificar los escenarios de `interfaz-web`.
-
-## 3. Capacitación
-- [ ] 3.1 Ajustar la guía de capacitación al ingreso con cuenta y al ambiente de capacitación de la V2.

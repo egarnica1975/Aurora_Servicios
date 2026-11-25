@@ -1,16 +1,15 @@
-## 1. Respaldo programado (`respaldo-recuperacion`)
-- [ ] 1.1 Confirmar con el proveedor la frecuencia, el punto de recuperación aceptable y la retención, y registrar las respuestas en `docs/plan-v2.md`.
-- [ ] 1.2 Confirmar que el plan de Supabase del ambiente de trabajo incluye respaldos automáticos; bloquear el piloto si no.
-- [ ] 1.3 Si D2 se aprueba: trabajo programado de `pg_dump` cifrado con almacenamiento fuera de Supabase.
-- [ ] 1.4 Verificar los escenarios de respaldo programado.
+## 1. Respaldo manual (`respaldo-recuperacion`)
+- [ ] 1.1 Definir con Aurora la periodicidad, el responsable y el lugar de guardado del volcado, y registrarlos en `docs/plan-v2.md`.
+- [ ] 1.2 Documentar el procedimiento de volcado de esquema y datos, con la nota sobre `--data-only` si se usa la CLI de Supabase.
+- [ ] 1.3 Asegurar que los archivos de volcado quedan fuera del repositorio (`.gitignore`).
+- [ ] 1.4 Verificar los escenarios de respaldo manual.
 
-## 2. Registro y aviso
-- [ ] 2.1 Insertar en `respaldo_registro` el resultado de cada respaldo, solo inserción para el rol de la aplicación.
-- [ ] 2.2 Aviso al administrador técnico por el canal acordado cuando un respaldo falle.
-- [ ] 2.3 Verificar los escenarios de registro y aviso.
+## 2. Registro
+- [ ] 2.1 Operación para registrar el resultado de respaldos y pruebas, de solo inserción para el rol de la aplicación.
+- [ ] 2.2 Verificar los escenarios de registro.
 
 ## 3. Recuperación
-- [ ] 3.1 Documentar el procedimiento de restauración en un proyecto distinto, con pasos y responsables.
-- [ ] 3.2 Ejecutar y registrar la prueba de restauración (conteos de solicitudes y cambios, tiempo) antes del piloto.
+- [ ] 3.1 Documentar la restauración en una base local o en un proyecto gratuito temporal.
+- [ ] 3.2 Ejecutar y registrar la prueba de restauración (conteos de solicitudes y cambios).
 - [ ] 3.3 Mostrar procedimiento y último resultado a las personas autorizadas.
 - [ ] 3.4 Verificar los escenarios de recuperación y de procedimiento.

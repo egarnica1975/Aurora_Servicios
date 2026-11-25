@@ -75,28 +75,15 @@ _Trazabilidad: L04 · H1 «respaldo» (recuperación) · E04, E07._
 - **WHEN** existe una migración nueva en el repositorio
 - **THEN** se aplica en orden y queda registrada como aplicada
 
-### Requirement: Ambientes de capacitación y de trabajo separados
-El sistema SHALL mantener el ambiente de capacitación y el de trabajo en bases de datos distintas, con credenciales distintas, y SHALL cargar en capacitación solo registros ficticios.
+### Requirement: Datos ficticios solo fuera del ambiente de trabajo
+El sistema SHALL permitir cargar el conjunto de datos ficticios de `datos-prueba/` únicamente en bases locales o de prueba mediante un procedimiento repetible, y SHALL rechazar esa carga sobre la base del ambiente de trabajo.
 
-_Trazabilidad: L11 · H1 «acceso-datos» (ambiente de capacitación) · E08, E10._
+_Trazabilidad: L11 · H1 «acceso-datos» (solo registros ficticios en prueba) · E08._
 
-#### Scenario: Práctica sin efecto en trabajo
-- **WHEN** un agente practica en el ambiente de capacitación
-- **THEN** ninguna de sus acciones aparece en la base de datos de trabajo
-
-#### Scenario: Credenciales distintas
-- **WHEN** se usa la credencial del ambiente de capacitación contra la base de trabajo
-- **THEN** el acceso es rechazado
-
-### Requirement: Carga reproducible de datos de prueba
-El sistema SHALL poder cargar en el ambiente de capacitación el conjunto de datos ficticios de `datos-prueba/` mediante un procedimiento repetible, y SHALL rechazar esa carga sobre el ambiente de trabajo.
-
-_Trazabilidad: L11 · H1 «acceso-datos» · E08, E10._
-
-#### Scenario: Reiniciar la capacitación
-- **WHEN** el administrador técnico ejecuta la carga de datos de prueba en capacitación
-- **THEN** el ambiente queda con los clientes, colaboradores y solicitudes ficticios del archivo
+#### Scenario: Preparar una base de pruebas
+- **WHEN** el equipo ejecuta la carga de datos de prueba sobre una base local vacía
+- **THEN** la base queda con los clientes, colaboradores y solicitudes ficticios del archivo
 
 #### Scenario: Carga sobre trabajo
-- **WHEN** se intenta ejecutar la carga de datos de prueba sobre el ambiente de trabajo
+- **WHEN** se intenta ejecutar la carga de datos de prueba sobre la base del ambiente de trabajo
 - **THEN** el procedimiento se niega y no modifica nada

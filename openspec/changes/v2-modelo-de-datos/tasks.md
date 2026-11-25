@@ -1,7 +1,6 @@
 ## 1. Preparación del repositorio y del entorno local
 - [ ] 1.1 Crear la estructura `supabase/` (migraciones, semillas) y documentar cómo levantar la base local con la CLI de Supabase.
-- [ ] 1.2 Crear el proyecto de capacitación en Supabase y guardar sus credenciales fuera del repositorio.
-- [ ] 1.3 Decidir D-06 (uno o dos proyectos) con el costo verificado y registrar la decisión en `docs/plan-v2.md`.
+- [ ] 1.2 Crear el proyecto de Supabase del ambiente de trabajo y guardar sus credenciales fuera del repositorio.
 
 ## 2. Esquema (`base-de-datos`)
 - [ ] 2.1 Migración 0001: tablas, claves, restricciones y catálogos según D3.
@@ -14,8 +13,7 @@
 - [ ] 3.2 Prueba de migración pendiente y registro de migraciones aplicadas.
 - [ ] 3.3 Verificar los escenarios de migraciones.
 
-## 4. Ambientes y datos de prueba
-- [ ] 4.1 Crear el proyecto de trabajo (si D-06 lo confirma) con credenciales distintas.
-- [ ] 4.2 Procedimiento de carga de `datos-prueba/` que se niega sobre el ambiente de trabajo.
-- [ ] 4.3 Verificar los escenarios de ambientes y carga.
-- [ ] 4.4 Verificar los escenarios de persistencia entre sesiones.
+## 4. Datos de prueba
+- [ ] 4.1 Procedimiento de carga de `datos-prueba/` en bases locales o de prueba que se niega sobre la base de trabajo.
+- [ ] 4.2 Verificar los escenarios de carga de datos de prueba.
+- [ ] 4.3 Verificar los escenarios de persistencia entre sesiones.
