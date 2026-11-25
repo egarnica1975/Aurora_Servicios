@@ -1,5 +1,5 @@
 ## 1. Respaldo manual (`respaldo-recuperacion`)
-- [ ] 1.1 Definir con Aurora la periodicidad, el responsable y el lugar de guardado del volcado, y registrarlos en `docs/plan-v2.md`.
+- [ ] 1.1 Definir el lugar de guardado y la retención del volcado semanal que hace el administrador técnico, y registrarlos en `docs/plan-v2.md`.
 - [ ] 1.2 Documentar el procedimiento de volcado de esquema y datos, con la nota sobre `--data-only` si se usa la CLI de Supabase.
 - [ ] 1.3 Asegurar que los archivos de volcado quedan fuera del repositorio (`.gitignore`).
 - [ ] 1.4 Verificar los escenarios de respaldo manual.

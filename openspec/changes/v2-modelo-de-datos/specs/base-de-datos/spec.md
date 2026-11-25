@@ -75,15 +75,19 @@ _Trazabilidad: L04 · H1 «respaldo» (recuperación) · E04, E07._
 - **WHEN** existe una migración nueva en el repositorio
 - **THEN** se aplica en orden y queda registrada como aplicada
 
-### Requirement: Datos ficticios solo fuera del ambiente de trabajo
-El sistema SHALL permitir cargar el conjunto de datos ficticios de `datos-prueba/` únicamente en bases locales o de prueba mediante un procedimiento repetible, y SHALL rechazar esa carga sobre la base del ambiente de trabajo.
+### Requirement: Datos de demostración desde archivos CSV
+El sistema SHALL poder cargar datos ficticios de demostración desde archivos CSV mediante un procedimiento repetible que el administrador técnico ejecuta cuando se requiera presentar, y SHALL marcar esos registros como de demostración.
 
-_Trazabilidad: L11 · H1 «acceso-datos» (solo registros ficticios en prueba) · E08._
+_Trazabilidad: L01 · H1 «acceso-datos» (solo registros ficticios en prueba) · E08._
 
-#### Scenario: Preparar una base de pruebas
-- **WHEN** el equipo ejecuta la carga de datos de prueba sobre una base local vacía
-- **THEN** la base queda con los clientes, colaboradores y solicitudes ficticios del archivo
+#### Scenario: Cargar la demostración
+- **WHEN** el administrador técnico ejecuta la carga de demostración sobre una base con el esquema vigente
+- **THEN** la base queda con los clientes, colaboradores y solicitudes ficticios de los archivos CSV
 
-#### Scenario: Carga sobre trabajo
-- **WHEN** se intenta ejecutar la carga de datos de prueba sobre la base del ambiente de trabajo
-- **THEN** el procedimiento se niega y no modifica nada
+#### Scenario: Registros identificables
+- **WHEN** se consultan las solicitudes cargadas por la demostración
+- **THEN** cada una indica que es de demostración
+
+#### Scenario: Carga repetida
+- **WHEN** se ejecuta dos veces la carga de demostración
+- **THEN** los conteos no cambian en la segunda ejecución

@@ -1,8 +1,8 @@
 ## Why
 
-La V1 guarda todo en objetos de JavaScript y solo persiste mediante archivos JSON exportados a mano (límites L01, L04, L11 del plan V2). Cerrar la pestaña pierde los datos no exportados, la integridad depende del código de la pantalla y el mismo archivo puede copiarse y editarse fuera de la aplicación. H1 exige referencia única, historia confiable y datos ficticios solo fuera del trabajo (E03, E07, E08); sin una base de datos relacional esos requisitos solo se cumplen de forma parcial (tabla D6 de `h1-registro-confiable`).
+La V1 guarda todo en objetos de JavaScript y solo persiste mediante archivos JSON exportados a mano (límites L01, L04, L11 del plan V2). Cerrar la pestaña pierde los datos no exportados, la integridad depende del código de la pantalla y el mismo archivo puede copiarse y editarse fuera de la aplicación. H1 exige referencia única, historia confiable y solo registros ficticios en prueba (E03, E07, E08); sin una base de datos relacional esos requisitos solo se cumplen de forma parcial (tabla D6 de `h1-registro-confiable`).
 
-Este cambio entrega el cimiento de la V2: una base de datos PostgreSQL con el esquema relacional de H1, catálogos controlados, migraciones versionadas y datos de prueba ficticios fuera del ambiente de trabajo. Corresponde a las oportunidades OP-01, OP-04, OP-05 y OP-11 del Horizonte 1.
+Este cambio entrega el cimiento de la V2: una base de datos PostgreSQL con el esquema relacional de H1, catálogos controlados, migraciones versionadas y datos ficticios de demostración en CSV. Corresponde a las oportunidades OP-01, OP-04, OP-05 y OP-11 del Horizonte 1.
 
 ## What Changes
 
@@ -10,12 +10,12 @@ Este cambio entrega el cimiento de la V2: una base de datos PostgreSQL con el es
 - Esquema relacional de solicitudes, cambios, colaboradores, clientes y catálogos (nuevo).
 - Migraciones versionadas en el repositorio (nuevo).
 - Un solo proyecto de Supabase (ambiente de trabajo); la capacitación se mantiene en la V1 y no continúa en la V2 (nuevo).
-- Carga reproducible de los datos ficticios de `datos-prueba/` solo en bases locales o de prueba (nuevo).
+- Datos ficticios de demostración en archivos CSV, que el administrador técnico carga cuando se requiera presentar (nuevo).
 
 ## Capabilities
 
 ### New Capabilities
-- `base-de-datos`: persistencia, esquema relacional, catálogos, migraciones y datos de prueba fuera del trabajo.
+- `base-de-datos`: persistencia, esquema relacional, catálogos, migraciones y datos de demostración.
 
 ### Modified Capabilities
 Ninguna.

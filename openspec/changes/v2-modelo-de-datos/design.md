@@ -73,9 +73,11 @@ create table respaldo_registro (
 
 Los catálogos se cargan con «mensajería, correo, teléfono» y «Abierta, En gestión». La V2 usa los mismos nombres que la V1 para que la migración no traduzca valores.
 
-### D4. Un solo ambiente (decisión del usuario, 25-nov-2026)
+### D4. Un solo ambiente y datos de demostración en CSV (decisión del usuario, 25-nov-2026)
 
-Proyecto académico no comercial: un único proyecto de Supabase como ambiente de trabajo. La capacitación se queda en la V1 y no continúa en la V2. Consecuencia declarada: el límite L11 (ambientes separados) no se cierra en la V2. Los datos ficticios se cargan solo en bases locales o de prueba, y el procedimiento se niega sobre la base de trabajo.
+Proyecto académico no comercial: un único proyecto de Supabase. La capacitación se queda en la V1. Los datos ficticios viven en CSV (`supabase/demo/`: clientes, colaboradores y solicitudes) y se cargan con `supabase/cargar_demo.sh` cuando haya que presentar, marcados con `origen = 'demo'`. La historia de esas solicitudes la genera la base de datos al insertarlas (cambio `v2-integridad-historial`); los CSV no traen cambios.
+
+Consecuencia declarada: L11 (ambientes separados) no se cierra en la V2, y los datos de demostración conviven con los de trabajo. Como la historia es inmutable y las solicitudes no se borran, quitar la demostración exige un reinicio de la base por el rol propietario (fuera de los roles de la aplicación). Es un supuesto a confirmar.
 
 ### D5. Contacto dentro de la solicitud
 
@@ -83,7 +85,7 @@ Se conserva el modelo de la V1 (nombre y un medio en la solicitud, ambos o ningu
 
 ## Riesgos y compensaciones
 
-- **Un solo ambiente:** una prueba hecha por error en el ambiente de trabajo afecta datos reales; se mitiga con el rol de aplicación y con la regla de que los datos ficticios no se cargan allí.
+- **Demostración mezclada con trabajo:** sin ambiente separado, los datos de demostración quedan junto a los de trabajo; se marcan con `origen = 'demo'` y no hay datos reales durante el proyecto académico.
 - **Dependencia del proveedor de nube:** el esquema es SQL estándar de PostgreSQL, lo que permite mover la base a otro servicio de PostgreSQL con un `pg_dump`.
 - **Migraciones aplicadas a mano:** se prohíben por requisito; el proceso de integración continua verifica que el esquema se reconstruya desde cero.
 

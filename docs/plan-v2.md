@@ -33,7 +33,7 @@ Leyenda: **Decidido** (lo fijó el usuario) · **Supuesto** (propuesta de diseñ
 | D-04 | Migraciones SQL versionadas en `supabase/migrations/` con Supabase CLI | Supuesto | Alembic | v2-modelo-de-datos |
 | D-05 | Supabase Auth con JWT validado por FastAPI; el ingreso pasa por la API para registrar fallos | Supuesto | Que Supabase exponga los fallos (no confirmado) | v2-api-backend D3 y prueba de concepto 1.2 |
 | D-06 | Un solo proyecto de Supabase (trabajo); sin capacitación en la V2, que sigue en la V1 | Decidido (25-nov) | Plan gratuito: se pausa tras una semana sin actividad | v2-modelo-de-datos |
-| D-07 | Respaldo solo por volcado manual de la base (`pg_dump` o `supabase db dump`); sin respaldo programado ni aviso | Decidido (25-nov) | Periodicidad, responsable y lugar de guardado `[por definir]` | v2-respaldo-recuperacion |
+| D-07 | Respaldo solo por volcado manual de la base (`pg_dump` o `supabase db dump`); sin respaldo programado ni aviso | Decidido (25-nov) | Volcado semanal por el rol técnico; lugar de guardado y retención `[por definir]` | v2-respaldo-recuperacion |
 | D-08 | API y front en Vercel (plan Hobby); Supabase no aloja Python (Edge Functions son TypeScript sobre Deno) | Decidido (25-nov); se valida con la prueba de concepto | Si Vercel no cumple, se reabre | v2-despliegue 1.2 |
 | D-09 | Front en HTML, CSS y JavaScript sin compilación, separado en archivos | Supuesto | Herramienta de construcción solo si se justifica | v2-front-conectado D1 |
 | D-10 | Pruebas con pytest sobre PostgreSQL local; 48 escenarios de H1 como pruebas de contrato; CI con GitHub Actions | Supuesto | — | v2-api-backend 4, v2-despliegue 3 |
@@ -66,9 +66,10 @@ Reglas de avance: no se archiva un cambio con escenarios fallidos (regla 8 del p
 
 ## 5. Preguntas abiertas para el usuario
 
-1. Periodicidad, responsable y lugar de guardado del volcado manual (D-07).
-2. ¿Se acepta que el proyecto gratuito de Supabase se pause por inactividad durante la demostración, o se reactiva antes de cada uso?
-3. Si la V2 llegara a usarse de forma comercial: cambiar a Vercel Pro y Supabase Pro (ver `docs/costos-v2.md`).
+1. Dónde se guarda el volcado semanal y cuánto tiempo se conserva (D-07).
+2. Si la V2 llegara a usarse de forma comercial: cambiar a Vercel Pro y Supabase Pro (ver `docs/costos-v2.md`).
+
+Decididas el 25-nov-2026: volcado semanal por el rol técnico; se acepta la pausa del plan gratuito; los datos ficticios de demostración van en CSV y se cargan cuando haya que presentar.
 
 ## 6. Fuentes consultadas (25-nov-2026)
 

@@ -11,3 +11,8 @@ aurora-solicitudes-*.json
 # Temporales
 *.tmp
 __pycache__/
+
+# Volcados de base de datos (contienen datos)
+*.dump
+*.sql.gz
+volcados/

@@ -1,0 +1,8 @@
+id,nombre,rol,ausente
+ana.ruiz,Ana Ruiz,agente,false
+luis.mora,Luis Mora,agente,false
+camila.pardo,Camila Pardo,agente,false
+diego.salas,Diego Salas,agente,false
+marta.velez,Marta Vélez,coordinador,false
+julian.ortiz,Julián Ortiz (Ventas),consulta,false
+soporte,Soporte Técnico (proveedor),administrador técnico,false

@@ -3,13 +3,17 @@
 ## ADDED Requirements
 
 ### Requirement: Respaldo manual de la base de datos
-El sistema SHALL permitir al administrador técnico generar una copia completa de la base de datos, con esquema y datos, mediante un procedimiento documentado.
+El sistema SHALL permitir al administrador técnico generar una copia completa de la base de datos, con esquema y datos, mediante un procedimiento documentado, que se ejecuta como mínimo una vez por semana.
 
 _Trazabilidad: L08 · H1 «respaldo» (respaldo) · OP-12 · E04, E08. Parcial: sin programación ni aviso de fallo._
 
 #### Scenario: Generar la copia
 - **WHEN** el administrador técnico ejecuta el procedimiento de respaldo
 - **THEN** obtiene un archivo que contiene el esquema y los datos de la base
+
+#### Scenario: Periodicidad semanal
+- **WHEN** se revisa el registro de respaldos de las últimas dos semanas
+- **THEN** hay al menos un respaldo registrado por cada semana
 
 #### Scenario: Archivo fuera del repositorio
 - **WHEN** se revisa el repositorio después de un respaldo

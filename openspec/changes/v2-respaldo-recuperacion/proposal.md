@@ -29,6 +29,6 @@ Ninguna.
 
 ## Preguntas abiertas
 
-1. Cada cuánto se hace el volcado manual y quién lo hace: `[por definir]`.
+1. Decidido (25-nov): el volcado lo hace el administrador técnico una vez por semana.
 2. Dónde se guarda el archivo y cuánto tiempo: `[por definir]`.
-3. El plan gratuito de Supabase pausa el proyecto tras una semana sin actividad; ¿se acepta ese riesgo en la demostración académica?
+3. Decidido (25-nov): se acepta que el plan gratuito de Supabase se pause por inactividad y se reactive antes de usarlo.
