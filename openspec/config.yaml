@@ -13,6 +13,7 @@ context: |
   aprendizaje en una sesión corta; acceso individual; datos de contacto mínimos; respaldo y
   recuperación comprobables; en capacitación solo registros ficticios.
   El ERP sigue siendo la referencia de clientes, pedidos y facturación y no se modifica.
+  Versión 2 (cambios v2-*): stack Supabase (PostgreSQL), Python y FastAPI; ver docs/plan-v2.md.
   Idioma de los artefactos: español. Las palabras SHALL, WHEN y THEN se mantienen en inglés.
 
 rules:
@@ -20,7 +21,7 @@ rules:
     - Citar la oportunidad (OP-xx) y la fuente del caso (E01–E10) que justifican el cambio.
     - Listar las preguntas abiertas en lugar de suponer datos que el caso no trae.
   specs:
-    - Describir comportamiento observable, no tecnología.
+    - "Describir comportamiento observable, no tecnología. Excepción en los cambios v2-*: las restricciones técnicas van en design.md y el spec.md sigue siendo observable."
     - Cada requisito lleva una línea de trazabilidad con OP, indicadores K y fuente.
     - No fijar cifras que el caso no define; usar [por definir].
     - Distinguir hechos documentados de supuestos de diseño.

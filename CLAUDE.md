@@ -21,6 +21,9 @@ Fuera de alcance de la V1: servidor, base de datos, autenticación real, respald
 
 Los límites de la V1 frente a H1 están en la tabla de cobertura de `openspec/changes/h1-registro-confiable/design.md` y en `docs/guia-v1-aurora.md`. No presentes como cumplido lo que la V1 solo simula.
 
+## Versión 2 (siguiente alcance)
+Stack: Supabase (PostgreSQL), Python y FastAPI. Plan y decisiones en `docs/plan-v2.md`. Cambios, en este orden: `v2-modelo-de-datos` → `v2-integridad-historial` → `v2-respaldo-recuperacion` y `v2-migracion-v1` → `v2-api-backend` → `v2-front-conectado` → `v2-despliegue`. Carpetas previstas: `supabase/`, `api/`, `web/`. Decisiones abiertas (Node.js, proyectos de Supabase, alojamiento, respaldo, costo) se confirman con el usuario, no se suponen.
+
 ## Reglas
 1. No inventes datos ni cifras. Lo que el caso no documenta se marca `[por definir]` y se lista como pregunta abierta.
 2. Separa lo documentado de lo supuesto; cada requisito conserva su línea de trazabilidad.
