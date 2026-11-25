@@ -17,6 +17,13 @@ app_ok()    { out=$(app "$2" "$3" "$4") && ok "$1" || fail "$1" "$out"; }
 app_error() { out=$(app "$2" "$3" "$4") && fail "$1" "se aceptó" || ok "$1"; }
 own_error() { out=$(q "$2") && fail "$1" "se aceptó" || ok "$1"; }
 
+# Simula los roles públicos de Supabase con los permisos que Supabase concede por defecto
+q "do \$\$ begin
+  if not exists (select 1 from pg_roles where rolname='anon') then create role anon nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
+  grant usage on schema public to anon, authenticated;
+  alter default privileges in schema public grant all on tables to anon, authenticated;
+end \$\$;" >/dev/null
 "$RAIZ/migrar.sh" "$CONN" >/dev/null || { echo "FALLA migraciones"; exit 1; }
 q "insert into cliente values ('C1','Cliente Uno'),('C2','Cliente Dos');
    insert into colaborador(id,nombre,rol) values ('u1','Uno','agente'),('u2','Dos','coordinador'),('u3','Tres','agente');" >/dev/null
@@ -94,5 +101,13 @@ igual "cambio de año: reinicia el consecutivo" "select ref from solicitud where
 igual "una transacción fallida no consume consecutivo" "select (select ultimo from contador_referencia where anio=2027)" "1"
 q "begin; $INS ('C1','Falla','paloma','Abierta','u1',now(),'u1'); commit;" >/dev/null 2>&1
 igual "tras un fallo el contador no avanzó" "select ultimo from contador_referencia where anio=$ANIO" "22"
+# --- seguridad frente a la API de datos de Supabase
+anon() { psql "$CONN" -Atq -v ON_ERROR_STOP=1 -c "set role $1; $2" 2>&1; }
+for R in anon authenticated; do
+  out=$(anon $R "select count(*) from solicitud") && [ "$out" = "0" ] && fail "$R no debería ver nada" "$out" || ok "$R no lee solicitudes"
+  out=$(anon $R "delete from cambio") && fail "$R borra" "$out" || ok "$R no borra historia"
+  out=$(anon $R "insert into auditoria(accion) values ('x')") && fail "$R inserta" "se aceptó" || ok "$R no escribe auditoría"
+done
+out=$(app u1 "" "select count(*) from solicitud" | tail -1) && [ "$out" -gt 0 ] 2>/dev/null && ok "aurora_app lee solicitudes" || fail "aurora_app lee solicitudes" "$out"
 echo "---- $OK correctas, $FALLA fallidas"
 [ "$FALLA" -eq 0 ]

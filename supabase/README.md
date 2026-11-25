@@ -3,7 +3,7 @@
 Cambio vigente: `v2-modelo-de-datos`. Todo es SQL estándar de PostgreSQL: funciona igual en una base local y en Supabase.
 
 ## Contenido
-- `migrations/`: migraciones numeradas (0001 esquema, 0002 catálogos, 0003 integridad e historial). Se aplican en orden.
+- `migrations/`: migraciones numeradas (0001 esquema, 0002 catálogos, 0003 integridad e historial, 0004 seguridad en Supabase). Se aplican en orden.
 - `migrar.sh "<conexión>"`: aplica las pendientes y las registra en `supabase_migrations.schema_migrations` (la misma tabla que usa la CLI de Supabase).
 - `demo/*.csv`: datos ficticios de demostración (clientes, colaboradores, solicitudes).
 - `cargar_demo.sh "<conexión>"`: carga la demostración; repetible, marca las solicitudes con `origen = 'demo'` y no pisa las existentes.
@@ -17,6 +17,10 @@ supabase/tests/probar_esquema.sh "host=/tmp port=5433 dbname=aurora_test"
 ```
 
 ## Supabase (proyecto gratuito)
+Guía paso a paso sin instalar nada: [`docs/instalar-supabase.md`](../docs/instalar-supabase.md). Los archivos `instalar_supabase.sql` y `demo/demo_supabase.sql` se generan con `python3 supabase/construir_sql.py` (no se editan a mano).
+
+La migración 0004 quita el acceso de la API de datos de Supabase (roles `anon` y `authenticated`) y activa la seguridad por filas: solo el servidor FastAPI, con el rol `aurora_app`, accede a los datos.
+
 La conexión se toma del panel de Supabase y **no se guarda en el repositorio**. El plan gratuito se pausa tras una semana sin actividad: reactivarlo antes de usarlo. Respaldo: volcado manual semanal (ver `v2-respaldo-recuperacion`); los archivos de volcado no se suben al repositorio.
 
 ## Cómo escribe la aplicación (integridad)

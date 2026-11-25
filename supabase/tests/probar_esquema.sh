@@ -12,7 +12,7 @@ espera_error() { if out=$(q "$2"); then echo "FALLA $1: se aceptó"; FALLA=$((FA
 igual()        { r=$(q "$2"); if [ "$r" = "$3" ]; then echo "OK   $1"; OK=$((OK+1)); else echo "FALLA $1: obtuvo '$r', esperaba '$3'"; FALLA=$((FALLA+1)); fi; }
 
 "$RAIZ/migrar.sh" "$CONN" >/dev/null || { echo "FALLA migración inicial"; exit 1; }
-igual "migraciones registradas" "select count(*) from supabase_migrations.schema_migrations" "3"
+igual "migraciones registradas" "select count(*) from supabase_migrations.schema_migrations" "4"
 igual "catálogo de canales" "select string_agg(nombre,',' order by nombre) from canal" "correo,mensajería,teléfono"
 igual "catálogo de estados" "select string_agg(nombre,',' order by nombre) from estado" "Abierta,En gestión"
 [ -z "$("$RAIZ/migrar.sh" "$CONN")" ] && { echo "OK   segunda ejecución no reaplica"; OK=$((OK+1)); } || { echo "FALLA reaplica"; FALLA=$((FALLA+1)); }

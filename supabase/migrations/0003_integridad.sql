@@ -19,7 +19,7 @@ begin
 end $$;
 
 create function solicitud_antes_insertar() returns trigger
-language plpgsql set search_path = public as $$
+language plpgsql security definer set search_path = public as $$
 begin
   if new.ref is null then
     new.ref := siguiente_referencia(extract(year from new.fecha_registro at time zone 'America/Bogota')::int);
