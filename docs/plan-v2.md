@@ -30,14 +30,14 @@ Leyenda: **Decidido** (lo fijó el usuario) · **Supuesto** (propuesta de diseñ
 | D-03 | Acceso a datos directo con psycopg (consultas parametrizadas) | Supuesto | SQLAlchemy | v2-api-backend D2 |
 | D-04 | Migraciones SQL versionadas en `supabase/migrations/` con Supabase CLI | Supuesto | Alembic | v2-modelo-de-datos |
 | D-05 | Supabase Auth con JWT validado por FastAPI; el ingreso pasa por la API para registrar fallos | Supuesto | Que Supabase exponga los fallos (no confirmado) | v2-api-backend D3 y prueba de concepto 1.2 |
-| D-06 | Dos proyectos de Supabase (capacitación, trabajo) | Abierto | Un proyecto con dos esquemas (menor costo, menos aislamiento) | v2-despliegue 1.3 |
-| D-07 | Respaldo nativo del proveedor + copia lógica `pg_dump` fuera de Supabase; frecuencia y RPO por definir | Abierto | PITR si el caso exige menos de 24 h de pérdida | v2-respaldo-recuperacion |
-| D-08 | Alojamiento de la API | Abierto | Vercel (FastAPI soportado, arranque en frío) frente a servidor siempre encendido | v2-despliegue 1.2–1.3 (prueba de concepto temprana) |
+| D-06 | Un solo proyecto de Supabase (trabajo); sin ambiente de capacitación en la V2 (se cubre en la V3) | Decidido (25-nov) | Requiere ajustar las especificaciones que hoy exigen capacitación; ver pendiente | v2-modelo-de-datos, v2-despliegue |
+| D-07 | Respaldo de muy bajo costo: nativo de Supabase Pro (7 días) y, opcionalmente, manual y copia lógica programada; alternativas en `docs/costos-v2.md` | Abierto (a elegir A, B o C) | PITR si el caso exige menos de 24 h de pérdida | v2-respaldo-recuperacion |
+| D-08 | API en Vercel; Supabase no aloja Python (sus Edge Functions son TypeScript sobre Deno) | Decidido (25-nov); se valida con la prueba de concepto | Consolidar en Supabase obligaría a reescribir la API en TypeScript y contradice D-02 | v2-despliegue 1.2 |
 | D-09 | Front en HTML, CSS y JavaScript sin compilación, separado en archivos | Supuesto | Herramienta de construcción solo si se justifica | v2-front-conectado D1 |
 | D-10 | Pruebas con pytest sobre PostgreSQL local; 48 escenarios de H1 como pruebas de contrato; CI con GitHub Actions | Supuesto | — | v2-api-backend 4, v2-despliegue 3 |
-| D-11 | Migración desde la V1 reutilizando el JSON exportado | Supuesto | Piloto directamente en V2 (no se migra) | v2-migracion-v1 |
-| D-12 | Costo total dentro de COP 300.000 al mes de operación y COP 12.000.000 de inversión | Abierto | Precios por consultar vigentes; no están calculados | v2-despliegue 4.1 |
-| D-13 | Rol de Node.js | Abierto | Sin rol por ahora (el usuario no lo mencionó para la V2 con Python/FastAPI) | v2-front-conectado D1 |
+| D-11 | El piloto se hace solo en la V2; la migración desde la V1 pierde su razón principal | Decidido (25-nov) | `v2-migracion-v1` queda por reducir o aplazar; pendiente de confirmar | v2-migracion-v1 |
+| D-12 | Costo total dentro de COP 300.000 al mes de operación y COP 12.000.000 de inversión | En seguimiento | TCO de referencia en `docs/costos-v2.md` (consulta 25-nov-2026) | v2-despliegue 4.1 |
+| D-13 | Node.js sin rol en la V2 | Decidido (25-nov) | — | v2-front-conectado D1 |
 | D-14 | Autorización en dos capas (API y base de datos) para que el administrador técnico no lea el contenido | Supuesto | Solo en la API (más riesgo) | v2-api-backend D4 |
 
 ## 3. Plan de ejecución
@@ -63,17 +63,17 @@ Reglas de avance: no se archiva un cambio con escenarios fallidos (regla 8 del p
 
 ## 5. Preguntas abiertas para el usuario
 
-1. ¿Node.js tiene algún rol en la V2? (D-13)
-2. ¿Uno o dos proyectos de Supabase? (D-06)
-3. ¿Vercel o servidor siempre encendido para la API? (D-08)
-4. Frecuencia de respaldo y pérdida máxima aceptable de datos (D-07).
-5. ¿El piloto se hará en la V1 o directamente en la V2? (D-11)
-6. Precios vigentes y verificación del límite de costo (D-12).
+1. Respaldo: elegir entre las opciones A, B y C de `docs/costos-v2.md` (D-07) y fijar la pérdida máxima aceptable.
+2. Confirmar los cambios a las especificaciones por no tener capacitación ni migración: quitar el ambiente de capacitación de `v2-modelo-de-datos`, `v2-front-conectado` y `v2-despliegue`; reducir o aplazar `v2-migracion-v1`. Esto deja sin cubrir el escenario de H1 de ambiente de capacitación hasta la V3 y debe declararse en la tabla de cobertura.
+3. ¿Vercel Pro o Hobby? Hobby es para uso no comercial según Vercel; el costo de Pro está en el escenario E1.
+4. Costos aún sin cifra: dominio, correo de avisos y horas del proveedor.
 
 ## 6. Fuentes consultadas (25-nov-2026)
 
 - Supabase, documentación de respaldos de bases de datos (planes, retención, PITR).
 - Vercel, documentación de FastAPI sobre el runtime de Python.
+- Precios vigentes de Supabase y Vercel (páginas de precios oficiales) y TRM de Portafolio del 18-nov-2026; ver `docs/costos-v2.md`.
+- Supabase, documentación de Edge Functions (TypeScript sobre Deno).
 - Supabase, documentación de registros de auditoría de Auth.
 
-Los precios no se citan: deben consultarse vigentes al decidir.
+Los precios cambian: consultar vigentes al decidir.
